@@ -13,7 +13,9 @@ Open `index.html` in any modern browser. No build step, no server, no dependenci
 - **4 regions** to explore: Helsinki, Espoo, Vantaa, and Kauniainen, each with unique monsters, NPCs, shops, and pixel art
 - **Turn-based combat** with stance system (Aggressive / Defensive / Magic)
 - **12 character levels** across 3 classes: Warrior, Mage, Rogue
-- **33 unique monsters** including a two-phase dragon boss fight
+- **45 unique monsters** including day/night variants and a two-phase dragon boss fight
+- **Monster bestiary** with pixel art portraits, stats, and humorous researcher's notes
+- **Grid map exploration** with fog of war, 32 landmarks, and WASD/arrow key movement
 - **Day/night cycle** that affects which monsters appear, forest atmosphere, and visual tinting
 - **AI adventurers** who progress alongside you, appear in taverns and forests, and generate news
 - **Tavern charm system** with flirtable NPCs per region, each with dialogue trees and unique rewards
@@ -44,8 +46,10 @@ A mix of Finnish mythology, urban fantasy, and absurdist humor:
 ## Controls
 
 - **Number keys 1-9** or **click** to select menu options
-- **M** button in status bar to toggle music
-- **S** button in status bar to toggle sound effects
+- **WASD / Arrow keys** to move on the forest map
+- **M key** in forest to view the map
+- **M button** in status bar to toggle music
+- **S button** in status bar to toggle sound effects
 
 ## Tech Stack
 

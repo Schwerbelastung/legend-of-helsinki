@@ -1,5 +1,38 @@
 # Changelog
 
+## [0.6.0] - 2026-04-06
+
+### Added
+- **Monster Bestiary** — journal tracking all encountered and slain monsters, accessible from town menu
+  - Detail view with pixel art portrait, stats, weaknesses, resistances
+  - Humorous "Researcher's notes" for every monster
+  - Encounter and kill counters per species
+- **Grid Map Exploration** — forest is now a 9x9 navigable grid per region
+  - WASD/Arrow key movement with fog of war
+  - M key to view the map overlay
+  - 32 unique landmarks (8 per region) with thematic descriptions
+  - Town at bottom-center; player must walk back manually
+  - Encounter chance scales with distance from town
+  - Dragon fight triggers at Dragon's Mound landmark in Kauniainen
+- **Day/Night Cycle** — 4 time phases (dawn, day, dusk, night)
+  - Visual tinting and atmosphere changes per phase
+  - Day-only and night-only monster variants
+  - Night-specific flavor text per region
+  - Time advances with each map movement, resets on rest
+- **12 New Monsters** with humorous Finnish flavor
+  - Helsinki: Postikyyhky, Kahvizombi, Yolohi, Kallio-Vampyyri
+  - Espoo: Startup-Golemi, Nuuksio-Karhu, WLAN-Haamu
+  - Vantaa: Laukkuhaukka, Bussi 666, Kiitotiesusi
+  - Kauniainen: Revontulihai, Sammakkoprinssi
+- **Sound Effects & Music** — Web Audio API procedural audio
+  - Unique SFX for combat, menus, healing, level up, gold, dice, dragon
+  - Per-screen looping chiptune music with night variant
+  - M/S toggle buttons in status bar
+- **Combat Animations** — screen flash and shake per action type
+  - Color-coded by damage type (red hit, yellow crit, cyan block, purple magic)
+- **Helsinki Hold'em Dice Game** — 5-dice tavern game replacing simple gambling
+  - Hold/reroll mechanic with Yatzy-style scoring
+
 ## [0.5.0] - 2026-04-06
 
 Initial release.
