@@ -1417,18 +1417,304 @@ function applyTimeOverlay() {
   }
 }
 
+/* ============================================================
+   bestiary.js — Monster journal with humorous researcher notes
+   ============================================================ */
+
+const BESTIARY_NOTES = {
+  rautatie_rotta: "Researcher's note: Feeds primarily on dropped HSL travel cards and human dignity. Avoid eye contact.",
+  torilokit: "Researcher's note: A single gull can steal a salmon sandwich in 0.3 seconds. A swarm can steal your will to live.",
+  kaljatrolli: "Researcher's note: Blood alcohol level: yes. Surprisingly philosophical after its fourth bottle.",
+  haamuvartija: "Researcher's note: Still reports for duty every morning at 0600. Has not been told the war ended.",
+  meritonttu: "Researcher's note: Collects shiny objects. Will trade secrets for bottle caps. Do not trust.",
+  postikyyhky: "Researcher's note: Delivers mail with 98% accuracy. The other 2% it delivers violence.",
+  kahvizombi: "Researcher's note: The only known cure is a double espresso. Without it, all hope is lost.",
+  yolohi: "Researcher's note: Born from the shadow of someone who missed the last metro. Smells of regret.",
+  kallio_vampyyri: "Researcher's note: Moved to Kallio for the 'atmosphere'. Now IS the atmosphere. Rates vinyl records.",
+  teknopeikko: "Researcher's note: Knows 14 programming languages. All of them are cursed.",
+  nuuksion_hiisi: "Researcher's note: An ancient guardian of the forest. Dislikes hikers, joggers, and especially cyclists.",
+  koodihirvio: "Researcher's note: A living stack overflow. If you understand its error messages, you are already infected.",
+  jarvenakki: "Researcher's note: Sings beautifully. Swimming lessons after the concert are NOT optional.",
+  betonijatti: "Researcher's note: Was a parking garage in a previous life. Misses the cars.",
+  startup_golem: "Researcher's note: Has pivoted 47 times. Current business model: punching adventurers. VC funding: pending.",
+  nuuksio_karhu: "Researcher's note: Has developed a sophisticated palate. Prefers rye bread sandwiches. Will reject white bread.",
+  wlan_haamu: "Researcher's note: Signal strength varies with mood. Emotional support does not improve connectivity.",
+  lentokenttadrake: "Researcher's note: Nests in Terminal 2. Gate B14 is its favorite. Accepts no boarding passes.",
+  keravanjoki_kraken: "Researcher's note: Locals blame it for every missing bicycle. The kraken blames the current.",
+  tullidemoni: "Researcher's note: Its 'Nothing to Declare' line takes 3 hours. The 'Something to Declare' line leads to Tuonela.",
+  terasvartija: "Researcher's note: Still follows its original programming: 'PROTECT WAREHOUSE 7.' Warehouse 7 no longer exists.",
+  myrskyhaamu: "Researcher's note: Weather forecast: 100% chance of pain. Carry an umbrella. It won't help.",
+  laukkuhaukka: "Researcher's note: Can carry luggage up to 40kg. Does not return it. Has excellent frequent flyer status.",
+  bussi_666: "Researcher's note: Runs on time only when chasing prey. Route: everywhere you don't want to be.",
+  kiitotie_susihukka: "Researcher's note: Hunts in packs along abandoned runways. Howls sound like jet engines winding down.",
+  ikivanha_hiisi: "Researcher's note: Older than Finnish independence. Older than Finland. Older than the concept of 'old'.",
+  tuonenvartija: "Researcher's note: Employee of the year in the afterlife, 847 years running. Very committed.",
+  sammon_varjo: "Researcher's note: Looking at it directly causes nosebleeds and an urge to file your taxes.",
+  jainen_louhitar: "Researcher's note: Her ice palace has central heating. She keeps it off out of spite.",
+  revontulihai: "Researcher's note: Scientists cannot explain it. Finns don't try. It's just a sky shark. It's fine.",
+  sammakkoprinssi: "Researcher's note: Has been kissed 4,312 times. Still a frog. His lawyers are VERY busy.",
+  lohikaarme: "Researcher's note: The big one. The really big one. Maybe bring a friend. And a will.",
+  lohikaarme_spirit: "Researcher's note: You killed it and it's STILL fighting? That seems unfair.",
+};
+
+function recordBestiaryEntry(monsterId) {
+  if (!state.bestiary) state.bestiary = {};
+  if (!state.bestiary[monsterId]) {
+    state.bestiary[monsterId] = { seen: 0, killed: 0, firstSeen: state.dayCount };
+  }
+  state.bestiary[monsterId].seen++;
+}
+
+function recordBestiaryKill(monsterId) {
+  if (!state.bestiary) state.bestiary = {};
+  if (!state.bestiary[monsterId]) {
+    state.bestiary[monsterId] = { seen: 0, killed: 0, firstSeen: state.dayCount };
+  }
+  state.bestiary[monsterId].killed++;
+}
+
+function getBestiaryEntries() {
+  if (!state.bestiary) return [];
+  return Object.keys(state.bestiary).map(id => {
+    const monster = MONSTERS[id];
+    const entry = state.bestiary[id];
+    return monster ? { ...monster, ...entry } : null;
+  }).filter(Boolean);
+}
+
+/* ============================================================
+   map.js — Grid map exploration with landmarks
+   ============================================================ */
+
+const MAP_SIZE = 9; // 9x9 grid per region
+const TOWN_POS = { x: 4, y: 8 }; // Town at bottom-center
+
+// Landmarks per region — {x, y, name, desc, art (canvas color)}
+const LANDMARKS = {
+  helsinki: [
+    { x: 4, y: 8, type: 'town', name: 'Helsinki Town', desc: 'The capital. Safety and warm beds.', color: '#e0c060' },
+    { x: 2, y: 5, type: 'landmark', name: 'Old Tram Depot', desc: 'Rusted trams sleep here. Rats skitter in the shadows.', color: '#8a6a3a' },
+    { x: 6, y: 3, type: 'landmark', name: 'Suomenlinna Ruins', desc: 'A crumbling sea fortress. Ghosts patrol the walls.', color: '#6a6a8a' },
+    { x: 4, y: 1, type: 'landmark', name: 'Cathedral Hill', desc: 'The white dome rises above the trees. Something watches from the steps.', color: '#d0c8b0' },
+    { x: 1, y: 7, type: 'landmark', name: 'Harbor Rocks', desc: 'Barnacle-covered stones. The sea gnomes gather here at low tide.', color: '#3a6a6a' },
+    { x: 7, y: 5, type: 'landmark', name: 'Kallio Graffiti Wall', desc: 'Colorful and profane. Someone painted "LOUHI WAS HERE" in blood red.', color: '#aa3a6a' },
+    { x: 3, y: 3, type: 'landmark', name: 'The Singing Well', desc: 'An ancient well. Faint music rises from the depths.', color: '#4a7aaa' },
+    { x: 7, y: 1, type: 'landmark', name: 'Statue of the Unknown Troll', desc: 'A bronze troll, green with age. Coins are wedged in its clenched fist.', color: '#4a8a4a' },
+  ],
+  espoo: [
+    { x: 4, y: 8, type: 'town', name: 'Espoo Town', desc: 'Where technology meets forest. Coffee is mandatory.', color: '#e0c060' },
+    { x: 1, y: 3, type: 'landmark', name: 'Nuuksio Deep Lake', desc: 'Crystal clear and impossibly deep. The Näkki watches from below.', color: '#2a4a8a' },
+    { x: 6, y: 2, type: 'landmark', name: 'Otaniemi Server Room', desc: 'Abandoned. Screens still flicker with code no one wrote.', color: '#40a0ff' },
+    { x: 3, y: 6, type: 'landmark', name: 'Mossy Boulder', desc: 'A glacial erratic covered in thick moss. Mushrooms grow in spiral patterns.', color: '#3a5a3a' },
+    { x: 7, y: 5, type: 'landmark', name: 'Fallen Pine Giant', desc: 'A pine tree wider than a house, toppled centuries ago. An ecosystem of its own.', color: '#4a3a1a' },
+    { x: 5, y: 1, type: 'landmark', name: 'The WiFi Shrine', desc: 'A stone cairn. Your phone shows full bars here. There is no router.', color: '#60a0c0' },
+    { x: 2, y: 7, type: 'landmark', name: 'Startup Graveyard', desc: 'Weathered signs: "Über for Saunas", "Blockchain Berries", "AI Reindeer".', color: '#8a8a6a' },
+    { x: 8, y: 3, type: 'landmark', name: 'The Bear Scratch Tree', desc: 'Deep claw marks six meters up. Whatever did this was NOT a normal bear.', color: '#6a4a2a' },
+  ],
+  vantaa: [
+    { x: 4, y: 8, type: 'town', name: 'Vantaa Town', desc: 'The airport looms. The river runs dark.', color: '#e0c060' },
+    { x: 2, y: 2, type: 'landmark', name: 'Crashed Plane', desc: 'Nose-down in the earth. Vines grow through the fuselage. The black box still beeps.', color: '#5a5a6a' },
+    { x: 6, y: 4, type: 'landmark', name: 'River Crossing', desc: 'A rickety bridge over the Keravanjoki. The water below moves wrong.', color: '#3a5a7a' },
+    { x: 1, y: 6, type: 'landmark', name: 'Customs Checkpoint', desc: '"NOTHING TO DECLARE" reads the sign. Paperwork flutters in unnatural wind.', color: '#aa6a3a' },
+    { x: 7, y: 1, type: 'landmark', name: 'Control Tower', desc: 'The abandoned control tower. The radar still spins. The screens show flights that don\'t exist.', color: '#4a4a5a' },
+    { x: 5, y: 6, type: 'landmark', name: 'Bus Stop 666', desc: 'The timetable lists departures to places you\'ve never heard of. "Next: 3 min."', color: '#cc3030' },
+    { x: 3, y: 4, type: 'landmark', name: 'Cargo Hangar 7', desc: 'Half-collapsed. Mechanical sounds inside. Something is still being manufactured.', color: '#5a5a4a' },
+    { x: 8, y: 7, type: 'landmark', name: 'Runway\'s End', desc: 'Where the runway meets the forest. Tire marks go INTO the trees.', color: '#3a3a3a' },
+  ],
+  kauniainen: [
+    { x: 4, y: 8, type: 'town', name: 'Kauniainen Town', desc: 'The ancient gate. Where the mortal world grows thin.', color: '#e0c060' },
+    { x: 4, y: 1, type: 'landmark', name: 'Dragon\'s Mound', desc: 'The hill pulses with heat. Below, something enormous breathes.', color: '#aa3a0a' },
+    { x: 1, y: 4, type: 'landmark', name: 'Rune Circle', desc: 'Seven standing stones carved with proto-Finnish runes. They hum in moonlight.', color: '#6060aa' },
+    { x: 7, y: 3, type: 'landmark', name: 'The Frozen Spring', desc: 'Water that flows upward. Ice that doesn\'t melt. Drink at your own risk.', color: '#80c0ff' },
+    { x: 2, y: 1, type: 'landmark', name: 'Sampo Altar', desc: 'Where the Sampo was first shattered. Reality is thin here. Colors are wrong.', color: '#c0a0ff' },
+    { x: 6, y: 6, type: 'landmark', name: 'Tapio\'s Grove', desc: 'The oldest trees in Finland. Tapio himself was last seen here. Bark faces watch.', color: '#2a4a2a' },
+    { x: 3, y: 7, type: 'landmark', name: 'Moonwell', desc: 'A pool that reflects the moon even at noon. Drinking from it restores the spirit.', color: '#a0b0d0' },
+    { x: 8, y: 5, type: 'landmark', name: 'Aurora Pillar', desc: 'A column of frozen northern light. Impossible. Beautiful. Slightly warm.', color: '#40c080' },
+  ],
+};
+
+function initMapState() {
+  if (!state.mapState) state.mapState = {};
+  const region = state.player.currentRegion;
+  if (!state.mapState[region]) {
+    state.mapState[region] = {
+      playerX: TOWN_POS.x,
+      playerY: TOWN_POS.y,
+      explored: {},  // "x,y" -> true
+    };
+    // Mark town and adjacent tiles as explored
+    markExplored(region, TOWN_POS.x, TOWN_POS.y);
+    markExplored(region, TOWN_POS.x - 1, TOWN_POS.y);
+    markExplored(region, TOWN_POS.x + 1, TOWN_POS.y);
+    markExplored(region, TOWN_POS.x, TOWN_POS.y - 1);
+  }
+}
+
+function markExplored(region, x, y) {
+  if (x < 0 || x >= MAP_SIZE || y < 0 || y >= MAP_SIZE) return;
+  if (!state.mapState[region]) return;
+  state.mapState[region].explored[`${x},${y}`] = true;
+}
+
+function isExplored(region, x, y) {
+  return state.mapState[region]?.explored[`${x},${y}`] || false;
+}
+
+function getLandmarkAt(region, x, y) {
+  const landmarks = LANDMARKS[region] || [];
+  return landmarks.find(l => l.x === x && l.y === y);
+}
+
+function getPlayerMapPos() {
+  const region = state.player.currentRegion;
+  const ms = state.mapState[region];
+  return ms ? { x: ms.playerX, y: ms.playerY } : { ...TOWN_POS };
+}
+
+function isAtTown() {
+  const pos = getPlayerMapPos();
+  return pos.x === TOWN_POS.x && pos.y === TOWN_POS.y;
+}
+
+function distanceFromTown() {
+  const pos = getPlayerMapPos();
+  return Math.abs(pos.x - TOWN_POS.x) + Math.abs(pos.y - TOWN_POS.y);
+}
+
+function movePlayer(dx, dy) {
+  const region = state.player.currentRegion;
+  initMapState();
+  const ms = state.mapState[region];
+  const nx = ms.playerX + dx;
+  const ny = ms.playerY + dy;
+  if (nx < 0 || nx >= MAP_SIZE || ny < 0 || ny >= MAP_SIZE) return false;
+  ms.playerX = nx;
+  ms.playerY = ny;
+  markExplored(region, nx, ny);
+  // Also reveal adjacent tiles
+  markExplored(region, nx - 1, ny);
+  markExplored(region, nx + 1, ny);
+  markExplored(region, nx, ny - 1);
+  markExplored(region, nx, ny + 1);
+  return true;
+}
+
+function drawMapScreen() {
+  clear('#08080e');
+  const region = state.player.currentRegion;
+  initMapState();
+  const ms = state.mapState[region];
+  const landmarks = LANDMARKS[region] || [];
+
+  const cellSize = 18;
+  const offsetX = Math.floor((320 - MAP_SIZE * cellSize) / 2);
+  const offsetY = 20;
+
+  // Title
+  textCenter('Forest Map', 4, '#a0a0c0', 7);
+
+  // Draw grid
+  for (let y = 0; y < MAP_SIZE; y++) {
+    for (let x = 0; x < MAP_SIZE; x++) {
+      const px = offsetX + x * cellSize;
+      const py = offsetY + y * cellSize;
+      const explored = isExplored(region, x, y);
+
+      if (!explored) {
+        // Fog of war
+        rect(px, py, cellSize - 1, cellSize - 1, '#0e0e14');
+      } else {
+        // Explored tile
+        const landmark = getLandmarkAt(region, x, y);
+        if (landmark) {
+          rect(px, py, cellSize - 1, cellSize - 1, landmark.color + '40');
+          rect(px + 2, py + 2, cellSize - 5, cellSize - 5, landmark.color + '80');
+        } else {
+          // Normal forest tile
+          rect(px, py, cellSize - 1, cellSize - 1, '#1a2a1a');
+          // Random tree dots
+          if ((x * 7 + y * 13) % 3 === 0) {
+            rect(px + 4, py + 3, 3, 3, '#0e1e0e');
+            rect(px + 10, py + 8, 3, 3, '#0e1e0e');
+          }
+        }
+      }
+
+      // Player position
+      if (x === ms.playerX && y === ms.playerY) {
+        rect(px + 5, py + 4, 8, 10, '#e0d0a0');
+        circle(px + 9, py + 3, 3, '#e0c090');
+      }
+    }
+  }
+
+  // Legend at bottom
+  const ly = offsetY + MAP_SIZE * cellSize + 6;
+  rect(10, ly, 6, 6, '#e0d0a0');
+  text('You', 20, ly, '#a0a0b0', 6);
+  rect(60, ly, 6, 6, '#e0c060');
+  text('Town', 70, ly, '#a0a0b0', 6);
+  rect(110, ly, 6, 6, '#6a8a6a');
+  text('Landmark', 120, ly, '#a0a0b0', 6);
+  rect(200, ly, 6, 6, '#0e0e14');
+  text('Unknown', 210, ly, '#6a6a7a', 6);
+
+  applyTimeOverlay();
+}
+
+function drawBestiaryScreen(monsterId) {
+  if (monsterId && MONSTERS[monsterId]) {
+    // Detail view — draw the monster
+    const m = MONSTERS[monsterId];
+    drawMonster(m.art, m.region);
+    // Dark overlay for text readability
+    rect(0, 130, 320, 70, '#0a0a12d0');
+    text(m.name, 8, 134, '#e0d0a0', 7);
+    // Stats line
+    const weakStr = m.weaknesses.length > 0 ? m.weaknesses.join(', ') : 'none';
+    text(`Weak: ${weakStr}`, 8, 148, '#e08080', 5);
+    const resStr = m.resistances.length > 0 ? m.resistances.join(', ') : 'none';
+    text(`Resist: ${resStr}`, 8, 158, '#8080e0', 5);
+    // Stats
+    text(`HP:${m.hp} STR:${m.strength} DEF:${m.defense} SPD:${m.speed}`, 8, 168, '#8a8a9a', 5);
+    // Region and time
+    const timeLabel = m.timeOfDay ? (m.timeOfDay === 'night' ? 'Night' : 'Day') : 'Any time';
+    text(`${m.region} / ${timeLabel}`, 8, 178, '#6a8a6a', 5);
+    // Kill count
+    const entry = state.bestiary[monsterId];
+    if (entry) {
+      text(`Encountered: ${entry.seen}  Slain: ${entry.killed}`, 8, 188, '#a0a0b0', 5);
+    }
+  } else {
+    // List view
+    clear('#0a0a14');
+    rect(5, 5, 310, 190, '#12121e');
+    textCenter('Monster Bestiary', 10, '#e0d0a0', 8);
+    rect(40, 22, 240, 1, '#3a3a4a');
+    const entries = getBestiaryEntries();
+    if (entries.length === 0) {
+      textCenter('No monsters encountered yet.', 50, '#6a6a7a', 6);
+    } else {
+      textCenter(`${entries.length} species discovered`, 28, '#6a6a7a', 6);
+    }
+  }
+}
+
 const state = {
   screen: 'title',
   player: null,
   aiPlayers: [],
   newsBoard: [],
   dayCount: 0,
-  timeTick: 4,  // Start at morning (day phase)
+  timeTick: 4,
   combatState: null,
   eventState: null,
   shopState: null,
   questBoard: [],
   flags: {},
+  bestiary: {},
+  mapState: {},
+  bestiaryViewId: null,
 };
 
 function createPlayer(name, playerClass) {
@@ -1640,6 +1926,8 @@ function saveGame() {
     timeTick: state.timeTick,
     questBoard: state.questBoard,
     flags: state.flags,
+    bestiary: state.bestiary,
+    mapState: state.mapState,
   };
   localStorage.setItem(SAVE_KEY, JSON.stringify(data));
 }
@@ -1656,6 +1944,8 @@ function loadGame() {
     state.timeTick = data.timeTick || 4;
     state.questBoard = data.questBoard || [];
     state.flags = data.flags || {};
+    state.bestiary = data.bestiary || {};
+    state.mapState = data.mapState || {};
     return true;
   } catch {
     return false;
@@ -1691,6 +1981,7 @@ function startCombat(monsterTemplate) {
   state.combatState.log.push({ text: monster.desc, color: 'narrator' });
   state.combatState.log.push({ text: `A ${monster.name} appears!`, color: 'combat' });
 
+  recordBestiaryEntry(monster.id);
   return state.combatState;
 }
 
@@ -2031,6 +2322,7 @@ function handleVictory() {
 
   cs.result = 'victory';
   log.push({ text: `You defeated ${m.name}!`, color: 'narrator' });
+  recordBestiaryKill(m.id);
 
   // XP
   let xpGain = m.xpReward;
@@ -5133,6 +5425,7 @@ function getTownMenu(addMsg) {
     { key: '6', label: 'Enter the Forest', action: 'goto_forest' },
     { key: '7', label: 'Travel', action: 'goto_travel' },
     { key: '8', label: 'Character Stats', action: 'goto_stats' },
+    { key: '9', label: 'Bestiary', action: 'goto_bestiary' },
   ];
 }
 
@@ -5523,6 +5816,10 @@ function getTravelMenu(addMsg) {
 
 function travelTo(regionId, addMsg) {
   state.player.currentRegion = regionId;
+  // Reset map position to town for new region
+  initMapState();
+  const ms = state.mapState[regionId];
+  if (ms) { ms.playerX = TOWN_POS.x; ms.playerY = TOWN_POS.y; }
   const region = getRegion(regionId);
   addMsg(`You travel to ${region.name}...`, 'narrator');
 }
@@ -5702,6 +5999,8 @@ function renderScreen() {
     case 'death': drawDeath(); break;
     case 'victory': drawVictory(); break;
     case 'news': drawNewsBoard(); break;
+    case 'map': drawMapScreen(); break;
+    case 'bestiary': drawBestiaryScreen(state.bestiaryViewId); break;
   }
   // Apply day/night tint overlay to gameplay screens
   const tintScreens = ['town','inn','shop','healer','tavern','forest','combat','event'];
@@ -5815,21 +6114,25 @@ function goToScreen(screen) {
       break;
 
     case 'forest': {
+      initMapState();
       renderScreen();
       const forestRegion = getRegion(state.player.currentRegion);
       const timeDesc = { dawn: 'The early light filters through the trees.', day: 'Sunlight dapples the forest floor.', dusk: 'Long shadows stretch between the trees.', night: 'Darkness cloaks the wilderness. Strange sounds echo.' };
-      addMsg(`You stand at the edge of the ${forestRegion.name} wilderness.`, 'narrator');
-      addMsg(timeDesc[getTimeOfDay()], 'system');
-      const forestMenu = [
-        { key: '1', label: 'Explore Deeper', action: 'forest_explore' },
-      ];
-      if (canFightDragon()) {
-        forestMenu.push({ key: '2', label: '*** Challenge the Dragon ***', action: 'forest_dragon' });
-        forestMenu.push({ key: '3', label: 'Return to Town', action: 'goto_town' });
+      const pos = getPlayerMapPos();
+      const landmark = getLandmarkAt(state.player.currentRegion, pos.x, pos.y);
+      const dist = distanceFromTown();
+
+      if (isAtTown()) {
+        addMsg(`You stand at the edge of the ${forestRegion.name} wilderness.`, 'narrator');
+      } else if (landmark) {
+        addMsg(`${landmark.name}`, 'title');
+        addMsg(landmark.desc, 'narrator');
       } else {
-        forestMenu.push({ key: '2', label: 'Return to Town', action: 'goto_town' });
+        addMsg(`Deep in the ${forestRegion.name} forest. (${dist} steps from town)`, 'narrator');
       }
-      setMenu(forestMenu);
+      addMsg(timeDesc[getTimeOfDay()], 'system');
+      addMsg('WASD/Arrows to move, M for map', 'subtitle');
+      setMenu(getForestMenu());
       break;
     }
 
@@ -5888,6 +6191,35 @@ function goToScreen(screen) {
         { key: '1', label: 'Back', action: 'goto_inn' },
       ]);
       break;
+
+    case 'map':
+      renderScreen();
+      addMsg('Your map of the region.', 'narrator');
+      setMenu([
+        { key: '1', label: 'Back', action: 'goto_forest' },
+      ]);
+      break;
+
+    case 'bestiary': {
+      state.bestiaryViewId = null;
+      renderScreen();
+      const entries = getBestiaryEntries();
+      if (entries.length === 0) {
+        addMsg('No monsters encountered yet. Explore the forest!', 'system');
+        setMenu([{ key: '1', label: 'Back', action: 'goto_town' }]);
+      } else {
+        addMsg(`=== Monster Bestiary (${entries.length} discovered) ===`, 'title');
+        const bItems = entries.map((m, i) => ({
+          key: String(i + 1),
+          label: `${m.name} — ${m.killed} slain`,
+          action: 'bestiary_view',
+          data: m.id,
+        }));
+        bItems.push({ key: String(bItems.length + 1), label: 'Back', action: 'goto_town' });
+        setMenu(bItems);
+      }
+      break;
+    }
   }
 }
 
@@ -5934,10 +6266,37 @@ function showEventState() {
   setMenu(items);
 }
 
-// ===================== FOREST EXPLORATION =====================
-function exploreForest() {
+// ===================== FOREST EXPLORATION (MAP-BASED) =====================
+function getForestMenu() {
+  const pos = getPlayerMapPos();
+  const items = [];
+  // Directional movement
+  if (pos.y > 0) items.push({ key: '1', label: 'Go North', action: 'map_move', data: { dx: 0, dy: -1 } });
+  if (pos.y < MAP_SIZE - 1) items.push({ key: '2', label: 'Go South', action: 'map_move', data: { dx: 0, dy: 1 } });
+  if (pos.x > 0) items.push({ key: '3', label: 'Go West', action: 'map_move', data: { dx: -1, dy: 0 } });
+  if (pos.x < MAP_SIZE - 1) items.push({ key: '4', label: 'Go East', action: 'map_move', data: { dx: 1, dy: 0 } });
+  items.push({ key: '5', label: 'View Map', action: 'view_map' });
+  if (isAtTown()) {
+    items.push({ key: '6', label: 'Enter Town', action: 'goto_town' });
+  }
+  // Dragon fight at Dragon's Mound in Kauniainen
+  const landmark = getLandmarkAt(state.player.currentRegion, pos.x, pos.y);
+  if (landmark && landmark.name === "Dragon's Mound" && canFightDragon()) {
+    items.push({ key: '7', label: '*** Challenge the Dragon ***', action: 'forest_dragon' });
+  }
+  return items;
+}
+
+function handleMapMove(dx, dy) {
   const region = state.player.currentRegion;
   const level = state.player.level;
+
+  if (!movePlayer(dx, dy)) {
+    addMsg("You can't go that way.", 'system');
+    return;
+  }
+
+  // Advance time
   const oldTime = getTimeOfDay();
   advanceTime(1);
   const newTime = getTimeOfDay();
@@ -5946,48 +6305,64 @@ function exploreForest() {
     if (newTime === 'night') addMsg('Strange creatures stir in the darkness.', 'event');
     if (newTime === 'dawn') addMsg('The first light brings relief.', 'narrator');
   }
+
+  // Check for landmark
+  const pos = getPlayerMapPos();
+  const landmark = getLandmarkAt(region, pos.x, pos.y);
+
+  if (landmark && landmark.type === 'town') {
+    addMsg('You arrive back at town.', 'narrator');
+    goToScreen('forest');
+    return;
+  }
+
+  if (landmark && landmark.type === 'landmark') {
+    sfxEvent();
+    addMsg(`You discover: ${landmark.name}`, 'title');
+    addMsg(landmark.desc, 'event');
+  }
+
+  // Encounter chances — higher farther from town
+  const dist = distanceFromTown();
+  const encounterBonus = Math.min(0.15, dist * 0.02);
   const roll = Math.random();
 
-  if (roll < 0.50) {
+  if (roll < 0.40 + encounterBonus) {
     // Monster encounter
     startCombat();
     goToScreen('combat');
-  } else if (roll < 0.75) {
+  } else if (roll < 0.60 + encounterBonus) {
     // Random event
     const event = getRandomEvent(region, level);
     if (event) {
       state.eventState = { event };
       goToScreen('event');
     } else {
-      // Fallback to flavor text
-      addMsg(getFlavorText(region), 'narrator');
+      if (!landmark) addMsg(getFlavorText(region), 'narrator');
+      goToScreen('forest');
     }
-  } else if (roll < 0.90) {
-    // Flavor text (nothing happens)
-    clearText();
-    renderScreen();
-    addMsg(getFlavorText(region), 'narrator');
-    setMenu([
-      { key: '1', label: 'Explore Deeper', action: 'forest_explore' },
-      { key: '2', label: 'Return to Town', action: 'goto_town' },
-    ]);
+  } else if (roll < 0.85) {
+    // Flavor text
+    if (!landmark) addMsg(getFlavorText(region), 'narrator');
+    goToScreen('forest');
   } else {
     // Find gold/item
-    clearText();
-    renderScreen();
     const goldFound = Math.floor(5 + Math.random() * (10 * level));
     state.player.gold += goldFound;
-    addMsg(`You find ${goldFound} gold coins scattered on the ground!`, 'gold');
+    addMsg(`You find ${goldFound} gold scattered on the ground!`, 'gold');
+    sfxGold();
     if (Math.random() < 0.3) {
       const potionId = level < 4 ? 'potion_small' : level < 8 ? 'potion_medium' : 'potion_large';
       addInventoryItem(potionId);
       addMsg(`Found: ${CONSUMABLES[potionId].name}!`, 'event');
     }
-    setMenu([
-      { key: '1', label: 'Explore Deeper', action: 'forest_explore' },
-      { key: '2', label: 'Return to Town', action: 'goto_town' },
-    ]);
+    goToScreen('forest');
   }
+}
+
+// Legacy wrapper for combat_end redirects
+function exploreForest() {
+  goToScreen('forest');
 }
 
 // ===================== DRAGON BOSS CHECK =====================
@@ -6041,7 +6416,14 @@ function handleMenuAction(item) {
       break;
 
     // Navigation
-    case 'goto_town': goToScreen('town'); break;
+    case 'goto_town': {
+      // Reset map position to town
+      initMapState();
+      const r = state.player.currentRegion;
+      if (state.mapState[r]) { state.mapState[r].playerX = TOWN_POS.x; state.mapState[r].playerY = TOWN_POS.y; }
+      goToScreen('town');
+      break;
+    }
     case 'goto_inn': goToScreen('inn'); break;
     case 'goto_shop': goToScreen('shop'); break;
     case 'goto_healer': goToScreen('healer'); break;
@@ -6050,6 +6432,7 @@ function handleMenuAction(item) {
     case 'goto_forest': goToScreen('forest'); break;
     case 'goto_travel': goToScreen('travel'); break;
     case 'goto_stats': goToScreen('stats'); break;
+    case 'goto_bestiary': goToScreen('bestiary'); break;
 
     // Inn
     case 'inn_rest':
@@ -6196,6 +6579,28 @@ function handleMenuAction(item) {
     case 'forest_explore':
       exploreForest();
       break;
+    case 'map_move':
+      clearText();
+      handleMapMove(item.data.dx, item.data.dy);
+      updateStatus();
+      break;
+    case 'view_map':
+      goToScreen('map');
+      break;
+    case 'bestiary_view': {
+      state.bestiaryViewId = item.data;
+      clearText();
+      renderScreen();
+      const bm = MONSTERS[item.data];
+      if (bm) {
+        addMsg(`=== ${bm.name} ===`, 'title');
+        addMsg(bm.desc, 'narrator');
+        const note = BESTIARY_NOTES[item.data];
+        if (note) addMsg(note, 'npc');
+      }
+      setMenu([{ key: '1', label: 'Back to Bestiary', action: 'goto_bestiary' }]);
+      break;
+    }
     case 'forest_dragon':
       if (canFightDragon()) {
         clearText();
@@ -6334,8 +6739,7 @@ function handleMenuAction(item) {
       updateStatus();
       state.eventState = null;
       setMenu([
-        { key: '1', label: 'Continue Exploring', action: 'forest_explore' },
-        { key: '2', label: 'Return to Town', action: 'goto_town' },
+        { key: '1', label: 'Continue', action: 'goto_forest' },
       ]);
       break;
     }
@@ -6390,10 +6794,35 @@ nameInput.addEventListener('keydown', (e) => {
 
 // ===================== KEYBOARD INPUT =====================
 document.addEventListener('keydown', (e) => {
+  if (animating) return;
+
   // Title screen: any key
   if (state.screen === 'title' && !currentMenu.length) {
     goToScreen('title');
     return;
+  }
+
+  // WASD / Arrow keys for map movement on forest screen
+  if (state.screen === 'forest') {
+    const keyMap = {
+      'w': { dx: 0, dy: -1 }, 'ArrowUp': { dx: 0, dy: -1 },
+      's': { dx: 0, dy: 1 }, 'ArrowDown': { dx: 0, dy: 1 },
+      'a': { dx: -1, dy: 0 }, 'ArrowLeft': { dx: -1, dy: 0 },
+      'd': { dx: 1, dy: 0 }, 'ArrowRight': { dx: 1, dy: 0 },
+      'm': null, // view map
+    };
+    if (e.key in keyMap) {
+      e.preventDefault();
+      initAudio();
+      if (e.key === 'm') {
+        goToScreen('map');
+      } else {
+        clearText();
+        handleMapMove(keyMap[e.key].dx, keyMap[e.key].dy);
+        updateStatus();
+      }
+      return;
+    }
   }
 
   // Number keys 1-9 select menu items
