@@ -74,6 +74,10 @@ legend-of-helsinki/
 
 The game runs from `js/game.js`, a single bundled file. The individual module files in `js/` are the original source files kept for reference and development.
 
+## Testing
+
+Open `test.html` in a browser to run the test suite. 90+ assertions covering all core game systems. No Node.js or build step required.
+
 ## Credits
 
 Inspired by **Legend of the Red Dragon** (1989) by Seth Able Robinson.

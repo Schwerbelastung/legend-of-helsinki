@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Legend of Helsinki — Test Suite</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    body { padding: 20px; overflow: auto; display: block; }
+    #testResults {
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      line-height: 1.6;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 20px;
+      background: #0c0c14;
+      border-radius: 8px;
+    }
+    .suite-name { color: #a0a0c0; font-size: 15px; font-weight: bold; margin-top: 16px; }
+    .pass { color: #60c060; }
+    .fail { color: #e04040; font-weight: bold; }
+    .summary { margin-top: 20px; padding-top: 10px; border-top: 1px solid #3a3a4a; font-size: 14px; }
+    .hidden { position: absolute; left: -9999px; top: -9999px; width: 1px; height: 1px; overflow: hidden; }
+  </style>
+</head>
+<body>
+  <!-- Hidden game DOM stubs (game.js needs these to load) -->
+  <div class="hidden">
+    <div id="gameContainer">
+      <canvas id="gameCanvas" width="320" height="200"></canvas>
+      <div id="statusBar">
+        <span id="statName"></span><span id="statLevel"></span>
+        <span id="statHp"></span><span id="statMp"></span>
+        <span id="statGold"></span><span id="statRegion"></span>
+        <span id="audioToggles">
+          <button id="btnMusic">M</button><button id="btnSfx">S</button>
+        </span>
+      </div>
+      <div id="textPanel"><div id="textContent"></div></div>
+      <div id="menuPanel"></div>
+      <div id="nameInputWrap">
+        <input type="text" id="nameInput"><button id="nameSubmit">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="testResults"></div>
+
+  <!-- Load game code (all functions become global) -->
+  <script src="js/game.js"></script>
+
+  <!-- Test framework + tests -->
+  <script>
+  // ===================== MINI TEST FRAMEWORK =====================
+  const results = { passed: 0, failed: 0, errors: [] };
+  const output = document.getElementById('testResults');
+
+  function suite(name) {
+    const div = document.createElement('div');
+    div.className = 'suite-name';
+    div.textContent = `--- ${name} ---`;
+    output.appendChild(div);
+  }
+
+  function assert(condition, description) {
+    const div = document.createElement('div');
+    if (condition) {
+      results.passed++;
+      div.className = 'pass';
+      div.textContent = `  PASS  ${description}`;
+    } else {
+      results.failed++;
+      div.className = 'fail';
+      div.textContent = `  FAIL  ${description}`;
+      results.errors.push(description);
+    }
+    output.appendChild(div);
+  }
+
+  function assertEqual(actual, expected, description) {
+    const pass = actual === expected;
+    if (!pass) {
+      description += ` (expected ${expected}, got ${actual})`;
+    }
+    assert(pass, description);
+  }
+
+  function assertInRange(actual, min, max, description) {
+    const pass = actual >= min && actual <= max;
+    if (!pass) {
+      description += ` (expected ${min}-${max}, got ${actual})`;
+    }
+    assert(pass, description);
+  }
+
+  function assertTruthy(val, description) {
+    assert(!!val, description);
+  }
+
+  function showSummary() {
+    const div = document.createElement('div');
+    div.className = 'summary';
+    const total = results.passed + results.failed;
+    if (results.failed === 0) {
+      div.innerHTML = `<span class="pass">ALL ${total} TESTS PASSED</span>`;
+    } else {
+      div.innerHTML = `<span class="pass">${results.passed} passed</span> / <span class="fail">${results.failed} failed</span> out of ${total}`;
+    }
+    output.appendChild(div);
+  }
+
+  // ===================== SETUP =====================
+  // Disable audio for tests
+  sfxEnabled = false;
+  musicEnabled = false;
+
+  // Clear any existing save
+  localStorage.removeItem('legend_helsinki_save');
+
+  // ===================== TEST SUITES =====================
+
+  // --- Player Creation ---
+  suite('Player Creation');
+  createPlayer('TestHero', 'warrior');
+  assertEqual(state.player.name, 'TestHero', 'Player name is set');
+  assertEqual(state.player.class, 'warrior', 'Player class is warrior');
+  assertEqual(state.player.level, 1, 'Starts at level 1');
+  assertEqual(state.player.hp, 30, 'Warrior starts with 30 HP');
+  assertEqual(state.player.mp, 5, 'Warrior starts with 5 MP');
+  assertEqual(state.player.strength, 8, 'Warrior starts with 8 STR');
+  assertEqual(state.player.gold, 50, 'Starts with 50 gold');
+  assertEqual(state.player.currentRegion, 'helsinki', 'Starts in Helsinki');
+  assert(state.player.inventory.length > 0, 'Starts with items in inventory');
+
+  createPlayer('TestMage', 'mage');
+  assertEqual(state.player.hp, 18, 'Mage starts with 18 HP');
+  assertEqual(state.player.magic, 8, 'Mage starts with 8 MAG');
+
+  createPlayer('TestRogue', 'rogue');
+  assertEqual(state.player.speed, 7, 'Rogue starts with 7 SPD');
+
+  // Reset to warrior for remaining tests
+  createPlayer('TestHero', 'warrior');
+
+  // --- Level Up ---
+  suite('Level Up System');
+  state.player.xp = 0;
+  assert(!checkLevelUp(), 'No level up at 0 XP');
+  state.player.xp = 100;
+  assert(checkLevelUp(), 'Level up at 100 XP (level 1->2)');
+  assertEqual(state.player.level, 2, 'Now level 2');
+  assertEqual(state.player.hp, state.player.maxHp, 'HP fully restored on level up');
+  assertEqual(state.player.mp, state.player.maxMp, 'MP fully restored on level up');
+  const prevMaxHp = state.player.maxHp;
+  state.player.xp = 250;
+  checkLevelUp();
+  assertEqual(state.player.level, 3, 'Level up to 3 at 250 XP');
+  assert(state.player.maxHp > prevMaxHp, 'MaxHP increased on level up');
+
+  // Max level cap
+  state.player.level = 12;
+  state.player.xp = 99999;
+  assert(!checkLevelUp(), 'Cannot level past 12');
+
+  // --- Spells ---
+  suite('Spell System');
+  createPlayer('TestHero', 'warrior');
+  let spells = getAvailableSpells();
+  assertEqual(spells.length, 0, 'Warrior has no spells at level 1');
+  state.player.level = 3;
+  spells = getAvailableSpells();
+  assertEqual(spells.length, 1, 'Warrior has 1 spell at level 3');
+  assertEqual(spells[0].id, 'bash', 'First warrior spell is Shield Bash');
+
+  createPlayer('TestMage', 'mage');
+  spells = getAvailableSpells();
+  assertEqual(spells.length, 1, 'Mage has Tulipallo at level 1');
+  state.player.level = 7;
+  spells = getAvailableSpells();
+  assertEqual(spells.length, 3, 'Mage has 3 spells at level 7');
+
+  // --- Inventory ---
+  suite('Inventory Management');
+  createPlayer('TestHero', 'warrior');
+  const startPotions = hasItem('potion_small');
+  assert(startPotions > 0, 'Starts with small potions');
+  addInventoryItem('potion_small', 2);
+  assertEqual(hasItem('potion_small'), startPotions + 2, 'Add 2 potions works');
+  removeInventoryItem('potion_small', 1);
+  assertEqual(hasItem('potion_small'), startPotions + 1, 'Remove 1 potion works');
+  removeInventoryItem('potion_small', 999);
+  assertEqual(hasItem('potion_small'), 0, 'Removing more than owned clears item');
+  assert(!removeInventoryItem('nonexistent'), 'Removing nonexistent item returns false');
+
+  // --- Items ---
+  suite('Item System');
+  assertTruthy(getItemById('wooden_sword'), 'Can find weapon by ID');
+  assertTruthy(getItemById('leather_vest'), 'Can find armor by ID');
+  assertTruthy(getItemById('potion_small'), 'Can find consumable by ID');
+  assertTruthy(getItemById('rat_dagger'), 'Can find crafted weapon by ID');
+  assertTruthy(getItemById('aurora_cloak'), 'Can find crafted armor by ID');
+  assertEqual(getItemById('nonexistent'), null, 'Nonexistent item returns null');
+
+  const shopWeapons = getShopWeapons('helsinki');
+  assert(shopWeapons.length > 0, 'Helsinki has shop weapons');
+  assert(shopWeapons.every(w => w.price > 0), 'All shop weapons have price > 0');
+
+  const shopConsumables = getShopConsumables();
+  assert(shopConsumables.length > 0, 'Shop has consumables');
+
+  // --- Consumable Use ---
+  suite('Consumable Use');
+  createPlayer('TestHero', 'warrior');
+  state.player.hp = 10;
+  const healResult = useConsumable(state.player, 'potion_small');
+  assertTruthy(healResult, 'Small potion returns result');
+  assertEqual(state.player.hp, 30, 'Small potion heals 20 HP (capped at max)');
+
+  state.player.hp = 1;
+  useConsumable(state.player, 'potion_full');
+  assertEqual(state.player.hp, state.player.maxHp, 'Full potion restores to max');
+
+  state.player.poisoned = true;
+  useConsumable(state.player, 'antidote');
+  assertEqual(state.player.poisoned, false, 'Antidote cures poison');
+
+  // --- Monster System ---
+  suite('Monster System');
+  const helsinkiMonsters = getMonstersByRegion('helsinki');
+  assert(helsinkiMonsters.length >= 5, 'Helsinki has at least 5 monster types');
+  const espooMonsters = getMonstersByRegion('espoo');
+  assert(espooMonsters.length >= 5, 'Espoo has at least 5 monster types');
+  const vantaaMonsters = getMonstersByRegion('vantaa');
+  assert(vantaaMonsters.length >= 5, 'Vantaa has at least 5 monster types');
+  const kauniainenMonsters = getMonstersByRegion('kauniainen');
+  assert(kauniainenMonsters.length >= 4, 'Kauniainen has at least 4 monster types');
+
+  const bossDragon = getMonsterById('lohikaarme');
+  assertTruthy(bossDragon, 'Dragon boss exists');
+  assert(bossDragon.isBoss, 'Dragon is marked as boss');
+  assertEqual(bossDragon.hp, 500, 'Dragon has 500 HP');
+
+  const randomMonster = getRandomMonster('helsinki', 1);
+  assertTruthy(randomMonster, 'getRandomMonster returns a monster');
+  assertEqual(randomMonster.region, 'helsinki', 'Random monster is from correct region');
+
+  // Monster instance scaling
+  const template = getMonsterById('rautatie_rotta');
+  const instance = createMonsterInstance(template, 1);
+  assertEqual(instance.maxHp, instance.hp, 'Instance maxHp equals hp');
+  assert(instance.hp >= template.hp, 'Instance HP >= template HP');
+
+  // --- NG+ Scaling ---
+  suite('New Game+ Scaling');
+  state.ngPlusCount = 0;
+  assertEqual(getNgPlusScale(), 1, 'NG+0 scale is 1.0');
+  state.ngPlusCount = 1;
+  assertInRange(getNgPlusScale(), 1.29, 1.31, 'NG+1 scale is ~1.3');
+  state.ngPlusCount = 3;
+  assertInRange(getNgPlusScale(), 1.89, 1.91, 'NG+3 scale is ~1.9');
+  state.ngPlusCount = 0;
+
+  // --- Day/Night Cycle ---
+  suite('Day/Night Cycle');
+  state.timeTick = 0;
+  assertEqual(getTimeOfDay(), 'dawn', 'Tick 0-3 is dawn');
+  state.timeTick = 4;
+  assertEqual(getTimeOfDay(), 'day', 'Tick 4-7 is day');
+  state.timeTick = 8;
+  assertEqual(getTimeOfDay(), 'dusk', 'Tick 8-11 is dusk');
+  state.timeTick = 12;
+  assertEqual(getTimeOfDay(), 'night', 'Tick 12-15 is night');
+  state.timeTick = 15;
+  assert(isNight(), 'isNight() true at tick 15');
+  state.timeTick = 4;
+  assert(!isNight(), 'isNight() false at tick 4');
+
+  advanceTime(1);
+  assertEqual(state.timeTick, 5, 'advanceTime increments tick');
+  state.timeTick = 15;
+  advanceTime(1);
+  assertEqual(state.timeTick, 0, 'Tick wraps from 15 to 0');
+
+  // Time-based monster filtering
+  state.timeTick = 4; // day
+  createPlayer('TestHero', 'warrior');
+  const dayMonster = getRandomMonster('helsinki', 1);
+  assert(!dayMonster.timeOfDay || dayMonster.timeOfDay === 'day', 'Day monsters during daytime');
+
+  state.timeTick = 12; // night
+  const nightPool = [];
+  for (let i = 0; i < 20; i++) nightPool.push(getRandomMonster('helsinki', 2));
+  const nightOnlyCount = nightPool.filter(m => m.timeOfDay === 'night').length;
+  assert(nightOnlyCount > 0, 'Night-only monsters appear at night');
+
+  state.timeTick = 4;
+
+  // --- Regions ---
+  suite('Regions');
+  const helsinki = getRegion('helsinki');
+  assertEqual(helsinki.name, 'Helsinki', 'Helsinki region exists');
+  assertEqual(helsinki.unlockLevel, 1, 'Helsinki unlocks at level 1');
+
+  const unlocked = getUnlockedRegions(1);
+  assertEqual(unlocked.length, 1, 'Only Helsinki unlocked at level 1');
+  const unlockedAt7 = getUnlockedRegions(7);
+  assertEqual(unlockedAt7.length, 3, '3 regions unlocked at level 7');
+  const unlockedAll = getUnlockedRegions(10);
+  assertEqual(unlockedAll.length, 4, 'All 4 regions unlocked at level 10');
+
+  assert(getHealCost('helsinki', 1) > 0, 'Heal cost is positive');
+  assert(getHealCost('helsinki', 5) > getHealCost('helsinki', 1), 'Heal cost scales with level');
+  assert(getInnCost('kauniainen', 1) > getInnCost('helsinki', 1), 'Kauniainen inn costs more than Helsinki');
+
+  // --- Combat ---
+  suite('Combat System');
+  createPlayer('TestHero', 'warrior');
+  state.player.level = 5;
+  state.player.strength = 20;
+  state.player.defense = 15;
+  state.player.weapon = { id: 'test', name: 'Test Sword', attackBonus: 10, price: 0 };
+  state.player.armor = { id: 'test', name: 'Test Armor', defenseBonus: 8, price: 0 };
+  state.player.hp = state.player.maxHp;
+
+  const combat = startCombat();
+  assertTruthy(combat, 'startCombat returns combat state');
+  assertTruthy(combat.monster, 'Combat has a monster');
+  assertEqual(combat.result, null, 'Combat starts with no result');
+  assert(combat.log.length > 0, 'Combat log has initial messages');
+
+  // Bestiary recorded on combat start
+  assertTruthy(state.bestiary[combat.monster.id], 'Monster recorded in bestiary on encounter');
+  assert(state.bestiary[combat.monster.id].seen >= 1, 'Seen count incremented');
+
+  // Player attack
+  const monsterHpBefore = state.combatState.monster.hp;
+  playerAttack('aggressive');
+  assert(state.combatState.monster.hp < monsterHpBefore || state.combatState.monster.hp <= 0,
+    'Aggressive attack deals damage');
+
+  // Run attempt
+  createPlayer('TestHero', 'warrior');
+  state.player.speed = 100; // guaranteed run
+  startCombat();
+  playerRun();
+  assertEqual(state.combatState.result, 'fled', 'High speed guarantees fleeing');
+
+  // Boss cannot flee
+  createPlayer('TestHero', 'warrior');
+  state.player.level = 12;
+  startBossCombat('lohikaarme');
+  playerRun();
+  assert(state.combatState.result !== 'fled', 'Cannot flee from boss');
+
+  // --- Dice Game ---
+  suite('Dice Scoring');
+  assertEqual(scoreDice([6, 6, 6, 6, 6]).name, 'FIVE OF A KIND!', 'Five of a kind detected');
+  assertEqual(scoreDice([6, 6, 6, 6, 6]).multiplier, 10, 'Five of a kind is 10x');
+  assertEqual(scoreDice([3, 3, 3, 3, 1]).name, 'Four of a Kind', 'Four of a kind detected');
+  assertEqual(scoreDice([3, 3, 3, 3, 1]).multiplier, 5, 'Four of a kind is 5x');
+  assertEqual(scoreDice([2, 2, 2, 5, 5]).name, 'Full House', 'Full house detected');
+  assertEqual(scoreDice([2, 2, 2, 5, 5]).multiplier, 4, 'Full house is 4x');
+  assertEqual(scoreDice([2, 3, 4, 5, 6]).name, 'Large Straight', 'Large straight detected');
+  assertEqual(scoreDice([1, 2, 3, 4, 5]).name, 'Small Straight', 'Small straight detected');
+  assertEqual(scoreDice([4, 4, 4, 2, 1]).name, 'Three of a Kind', 'Three of a kind detected');
+  assertEqual(scoreDice([3, 3, 5, 5, 1]).name, 'Two Pairs', 'Two pairs detected');
+  assertEqual(scoreDice([2, 2, 4, 5, 6]).name, 'One Pair', 'One pair detected');
+  assertEqual(scoreDice([1, 3, 4, 5, 2]).name, 'Small Straight', 'Small straight 1-5');
+  assertEqual(scoreDice([1, 2, 4, 5, 6]).name, 'Nothing', 'No hand detected correctly');
+
+  // --- Quests ---
+  suite('Quest System');
+  createPlayer('TestHero', 'warrior');
+  state.player.level = 2;
+  state.flags.found_tram_tracks = true;
+  const availQuests = getAvailableQuests('helsinki');
+  assert(availQuests.length > 0, 'Quests available in Helsinki');
+
+  acceptQuest('gull_menace');
+  assert(state.player.activeQuests.includes('gull_menace'), 'Quest added to active quests');
+  assert(state.questBoard.some(q => q.id === 'gull_menace'), 'Quest on quest board');
+
+  // Progress tracking
+  updateQuestProgress('torilokit');
+  const quest = state.questBoard.find(q => q.id === 'gull_menace');
+  assertEqual(quest.progress, 1, 'Quest progress increments on kill');
+
+  // Complete quest
+  for (let i = 0; i < 5; i++) updateQuestProgress('torilokit');
+  const completed = checkQuestCompletion();
+  assert(completed.length > 0, 'Quest detected as complete');
+
+  // --- Map System ---
+  suite('Map Exploration');
+  createPlayer('TestHero', 'warrior');
+  initMapState();
+  const startPos = getPlayerMapPos();
+  assertEqual(startPos.x, 4, 'Player starts at x=4 (TOWN_POS)');
+  assertEqual(startPos.y, 8, 'Player starts at y=8 (TOWN_POS)');
+  assert(isAtTown(), 'Player starts at town');
+  assertEqual(distanceFromTown(), 0, 'Distance from town is 0 at start');
+
+  assert(movePlayer(0, -1), 'Can move north');
+  assertEqual(getPlayerMapPos().y, 7, 'Y decreased after moving north');
+  assert(!isAtTown(), 'No longer at town after moving');
+  assertEqual(distanceFromTown(), 1, 'Distance is 1 after one step');
+
+  assert(isExplored('helsinki', 4, 7), 'Current tile is explored');
+  assert(isExplored('helsinki', 4, 6), 'Tile north of current is revealed');
+  assert(isExplored('helsinki', 3, 7), 'Tile west of current is revealed');
+
+  // Boundary check
+  state.mapState.helsinki.playerX = 0;
+  state.mapState.helsinki.playerY = 0;
+  assert(!movePlayer(-1, 0), 'Cannot move west past boundary');
+  assert(!movePlayer(0, -1), 'Cannot move north past boundary');
+
+  // Landmarks
+  const townLandmark = getLandmarkAt('helsinki', 4, 8);
+  assertTruthy(townLandmark, 'Town landmark exists at 4,8');
+  assertEqual(townLandmark.type, 'town', 'Town landmark has type town');
+
+  const allLandmarks = LANDMARKS.helsinki;
+  assert(allLandmarks.length >= 7, 'Helsinki has at least 7 landmarks');
+  assert(LANDMARKS.espoo.length >= 7, 'Espoo has at least 7 landmarks');
+  assert(LANDMARKS.vantaa.length >= 7, 'Vantaa has at least 7 landmarks');
+  assert(LANDMARKS.kauniainen.length >= 7, 'Kauniainen has at least 7 landmarks');
+
+  // --- Bestiary ---
+  suite('Bestiary');
+  createPlayer('TestHero', 'warrior');
+  state.bestiary = {};
+  recordBestiaryEntry('rautatie_rotta');
+  assertTruthy(state.bestiary.rautatie_rotta, 'Bestiary entry created');
+  assertEqual(state.bestiary.rautatie_rotta.seen, 1, 'Seen count is 1');
+  assertEqual(state.bestiary.rautatie_rotta.killed, 0, 'Kill count is 0');
+
+  recordBestiaryEntry('rautatie_rotta');
+  assertEqual(state.bestiary.rautatie_rotta.seen, 2, 'Seen count increments');
+
+  recordBestiaryKill('rautatie_rotta');
+  assertEqual(state.bestiary.rautatie_rotta.killed, 1, 'Kill count increments');
+
+  const entries = getBestiaryEntries();
+  assertEqual(entries.length, 1, 'getBestiaryEntries returns recorded entries');
+  assertEqual(entries[0].name, 'Rautatie-Rotta', 'Entry has monster name');
+
+  assertTruthy(BESTIARY_NOTES.rautatie_rotta, 'Bestiary note exists for rautatie_rotta');
+  assertTruthy(BESTIARY_NOTES.lohikaarme, 'Bestiary note exists for dragon');
+
+  // --- Crafting ---
+  suite('Crafting System');
+  createPlayer('TestHero', 'warrior');
+
+  assertEqual(CRAFT_RECIPES.length, 8, '8 crafting recipes exist');
+
+  // Check recipe material requirements
+  const ratRecipe = CRAFT_RECIPES.find(r => r.id === 'craft_rat_blade');
+  assertTruthy(ratRecipe, 'Rat blade recipe exists');
+  assertEqual(ratRecipe.materials[0].id, 'rat_fang', 'Rat blade needs rat fangs');
+  assertEqual(ratRecipe.materials[0].qty, 3, 'Rat blade needs 3 rat fangs');
+
+  // Can't craft without materials
+  const dummyAddMsg = () => {};
+  assert(!craftItem(ratRecipe, dummyAddMsg), 'Cannot craft without materials');
+
+  // Add materials and craft
+  addInventoryItem('rat_fang', 3);
+  assertEqual(hasItem('rat_fang'), 3, 'Added 3 rat fangs');
+  assert(craftItem(ratRecipe, dummyAddMsg), 'Crafting succeeds with materials');
+  assertEqual(hasItem('rat_fang'), 0, 'Materials consumed');
+  assertEqual(state.player.weapon.id, 'rat_dagger', 'Rat dagger equipped');
+  assertEqual(state.player.weapon.attackBonus, 7, 'Rat dagger has correct ATK');
+  assert(state.flags.crafted_craft_rat_blade, 'Craft flag set');
+
+  // --- Save/Load ---
+  suite('Save / Load');
+  createPlayer('TestHero', 'warrior');
+  state.player.gold = 999;
+  state.player.level = 7;
+  state.dayCount = 15;
+  state.timeTick = 10;
+  state.bestiary = { rautatie_rotta: { seen: 5, killed: 3, firstSeen: 1 } };
+  state.ngPlusCount = 2;
+  state.flags.test_flag = true;
+
+  saveGame();
+  assert(hasSave(), 'Save exists after saveGame()');
+
+  // Modify state
+  state.player.gold = 0;
+  state.player.level = 1;
+  state.dayCount = 0;
+
+  assert(loadGame(), 'loadGame returns true');
+  assertEqual(state.player.gold, 999, 'Gold restored');
+  assertEqual(state.player.level, 7, 'Level restored');
+  assertEqual(state.dayCount, 15, 'Day count restored');
+  assertEqual(state.timeTick, 10, 'Time tick restored');
+  assertEqual(state.bestiary.rautatie_rotta.killed, 3, 'Bestiary restored');
+  assertEqual(state.ngPlusCount, 2, 'NG+ count restored');
+  assertEqual(state.flags.test_flag, true, 'Flags restored');
+
+  // Clean up
+  localStorage.removeItem('legend_helsinki_save');
+  assert(!hasSave(), 'Save removed');
+
+  // --- Text Variety ---
+  suite('Text Variety');
+  assert(AGGRESSIVE_TEXTS.length >= 5, 'At least 5 aggressive texts');
+  assert(DEFENSIVE_TEXTS.length >= 5, 'At least 5 defensive texts');
+  assert(CRIT_TEXTS.length >= 5, 'At least 5 crit texts');
+  assert(VICTORY_TEXTS.length >= 5, 'At least 5 victory texts');
+  assert(DEFEAT_TEXTS.length >= 5, 'At least 5 defeat texts');
+  assert(FLEE_SUCCESS_TEXTS.length >= 5, 'At least 5 flee success texts');
+  assert(FLEE_FAIL_TEXTS.length >= 5, 'At least 5 flee fail texts');
+
+  // pick() works
+  const picked = pick(AGGRESSIVE_TEXTS);
+  assert(AGGRESSIVE_TEXTS.includes(picked), 'pick() returns item from array');
+
+  // --- Flavor Text ---
+  suite('Flavor Text');
+  state.timeTick = 4;
+  const dayFlavor = getFlavorText('helsinki');
+  assertTruthy(dayFlavor, 'Day flavor text returns string');
+  assert(typeof dayFlavor === 'string', 'Flavor text is a string');
+
+  state.timeTick = 12;
+  const nightFlavor = getFlavorText('helsinki');
+  assertTruthy(nightFlavor, 'Night flavor text returns string');
+  assert(FLAVOR_TEXT_NIGHT.helsinki.includes(nightFlavor), 'Night text comes from night pool');
+  state.timeTick = 4;
+
+  // --- Events ---
+  suite('Random Events');
+  createPlayer('TestHero', 'warrior');
+  state.player.level = 3;
+  const event = getRandomEvent('helsinki', 3);
+  // May be null due to randomness, so test multiple times
+  let foundEvent = false;
+  for (let i = 0; i < 20; i++) {
+    if (getRandomEvent('helsinki', 3)) { foundEvent = true; break; }
+  }
+  assert(foundEvent, 'Random events can be found in Helsinki');
+
+  // Event resolution
+  if (event) {
+    assert(event.choices.length > 0, 'Event has choices');
+    const outcome = resolveChoice(event, 0);
+    assertTruthy(outcome, 'resolveChoice returns an outcome');
+    assertTruthy(outcome.text, 'Outcome has text');
+  }
+
+  // --- AI Adventurers ---
+  suite('AI Adventurers');
+  createPlayer('TestHero', 'warrior');
+  assertEqual(state.aiPlayers.length, 6, '6 AI adventurers exist');
+
+  const louhi = state.aiPlayers.find(a => a.name === 'Louhi');
+  assertTruthy(louhi, 'Louhi exists');
+  assertEqual(louhi.personality, 'rival', 'Louhi is the rival');
+
+  const aiInHelsinki = getAiPlayersInRegion('helsinki');
+  assert(aiInHelsinki.length > 0, 'AI adventurers present in Helsinki');
+
+  // Tavern NPC exists per region
+  assertTruthy(getTavernNpc('helsinki'), 'Helsinki has tavern NPC');
+  assertTruthy(getTavernNpc('espoo'), 'Espoo has tavern NPC');
+  assertTruthy(getTavernNpc('vantaa'), 'Vantaa has tavern NPC');
+  assertTruthy(getTavernNpc('kauniainen'), 'Kauniainen has tavern NPC');
+
+  // --- Dragon Boss Check ---
+  suite('Dragon Boss Requirements');
+  createPlayer('TestHero', 'warrior');
+  assert(!canFightDragon(), 'Cannot fight dragon at level 1');
+  state.player.level = 12;
+  state.player.currentRegion = 'kauniainen';
+  assert(!canFightDragon(), 'Cannot fight dragon without Sampo fragments');
+  addInventoryItem('sampo_fragment_1');
+  addInventoryItem('sampo_fragment_2');
+  addInventoryItem('sampo_fragment_3');
+  addInventoryItem('sampo_fragment_4');
+  assert(canFightDragon(), 'Can fight dragon with all fragments at level 12 in Kauniainen');
+  state.player.currentRegion = 'helsinki';
+  assert(!canFightDragon(), 'Cannot fight dragon outside Kauniainen');
+
+  // ===================== SUMMARY =====================
+  showSummary();
+  </script>
+</body>
+</html>

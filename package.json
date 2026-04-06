@@ -1,6 +1,6 @@
 {
   "name": "legend-of-helsinki",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "description": "A browser-based RPG inspired by Legend of the Red Dragon, set in fantasy Helsinki",
   "main": "index.html",
   "scripts": {},

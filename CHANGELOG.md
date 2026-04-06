@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.7.1] - 2026-04-06
+
+### Added
+- **Browser-based test suite** (`test.html`) — open in browser to run all tests
+  - 90+ assertions across 16 test suites
+  - Covers: player creation, level ups, spells, inventory, items, consumables, monsters, NG+ scaling, day/night cycle, regions, combat, dice scoring, quests, map exploration, bestiary, crafting, save/load, text variety, flavor text, events, AI adventurers, dragon boss requirements
+  - No build step, no Node.js — runs via `file://` like the game itself
+  - Mini test framework with pass/fail coloring and summary
+
 ## [0.7.0] - 2026-04-06
 
 ### Added
