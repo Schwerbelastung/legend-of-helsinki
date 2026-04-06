@@ -1,5 +1,25 @@
 # Changelog
 
+## [0.7.0] - 2026-04-06
+
+### Added
+- **Crafting system** — Ilmari the blacksmith forges gear from monster materials
+  - 8 recipes: Rat-Tooth Dagger, Troll-Hide Vest, Spectral Band, Overclocked Blade, Drakefire Plate, Thunderstrike Axe, Aurora Cloak, Rune Amulet
+  - 9 crafting materials dropped by specific monsters (Rat Fang, Troll Hide, Ghost Essence, Tech Chip, Hiisi Bark, Drake Scale, Storm Shard, Ancient Rune, Aurora Dust)
+  - Find Ilmari in the tavern to access the forge
+- **New Game+** — After slaying the dragon, restart with harder monsters but keep weapon, armor, accessory, bestiary, and half your gold
+  - Monsters scale +30% per NG+ cycle, stacking infinitely
+  - NG+ count displayed on victory screen
+- **Landmark interactions** — 18 landmarks now have gameplay effects
+  - Healing: Nuuksio Deep Lake, Mossy Boulder, Frozen Spring (HP); WiFi Shrine, Moonwell, Singing Well (MP); Rune Circle, Tapio's Grove (full restore)
+  - Loot: Harbor Rocks, Startup Graveyard (gold); Crashed Plane (potion)
+  - Knowledge: River Crossing, Aurora Pillar, Sampo Altar (XP)
+  - Combat: Bus Stop 666, Cargo Hangar 7 (trigger encounters)
+  - Hints: Kallio Graffiti Wall, Bear Scratch Tree, Runway's End (tips)
+- **Encounter text variety** — Randomized combat messages
+  - 5 aggressive attack lines, 5 defensive lines, 5 critical hit lines
+  - 5 victory lines, 5 defeat lines, 5 flee success/fail lines each
+
 ## [0.6.0] - 2026-04-06
 
 ### Added

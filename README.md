@@ -22,6 +22,9 @@ Open `index.html` in any modern browser. No build step, no server, no dependenci
 - **Helsinki Hold'em** dice game in the tavern
 - **Quest board** with kill quests, the Sampo fragment collection chain, and region-specific objectives
 - **Random forest events** with choices and persistent consequences
+- **Crafting system** — Ilmari the blacksmith forges gear from monster materials (8 recipes)
+- **New Game+** — Beat the dragon, restart harder with kept gear (monsters +30% per cycle)
+- **Interactive landmarks** — Healing wells, XP shrines, loot caches, combat triggers
 - **Equipment system** with weapons, armor, accessories, and consumables
 - **Procedural pixel art** for all scenes, monsters, NPCs, and locations (no external assets)
 - **Web Audio sound effects and music** with per-screen procedural chiptune tracks

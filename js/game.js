@@ -605,6 +605,45 @@ const CONSUMABLES = {
   tram_key:         { id: 'tram_key', name: 'Tram Depot Key', type: 'quest', value: 0, price: 0, desc: 'Key to the old tram depot' },
   server_core:      { id: 'server_core', name: 'Server Core', type: 'quest', value: 0, price: 0, desc: 'Pulsing with strange energy' },
   tuonela_pass:     { id: 'tuonela_pass', name: 'Tuonela Transit Pass', type: 'quest', value: 0, price: 0, desc: 'Valid for one-way travel' },
+
+  // Crafting materials (dropped by monsters)
+  rat_fang:       { id: 'rat_fang', name: 'Rat Fang', type: 'material', value: 0, price: 5, desc: 'A yellowed fang. Surprisingly sharp.' },
+  troll_hide:     { id: 'troll_hide', name: 'Troll Hide', type: 'material', value: 0, price: 8, desc: 'Thick, beer-stained leather.' },
+  ghost_essence:  { id: 'ghost_essence', name: 'Ghost Essence', type: 'material', value: 0, price: 12, desc: 'A wisp of spectral energy in a bottle.' },
+  tech_chip:      { id: 'tech_chip', name: 'Tech Chip', type: 'material', value: 0, price: 15, desc: 'A circuit board fragment that still hums.' },
+  hiisi_bark:     { id: 'hiisi_bark', name: 'Hiisi Bark', type: 'material', value: 0, price: 18, desc: 'Bark from a forest demon. Warm to the touch.' },
+  drake_scale:    { id: 'drake_scale', name: 'Drake Scale', type: 'material', value: 0, price: 25, desc: 'Iridescent and fireproof.' },
+  storm_shard:    { id: 'storm_shard', name: 'Storm Shard', type: 'material', value: 0, price: 30, desc: 'A crystallized piece of lightning.' },
+  ancient_rune:   { id: 'ancient_rune', name: 'Ancient Rune', type: 'material', value: 0, price: 40, desc: 'A stone tablet fragment pulsing with old magic.' },
+  aurora_dust:    { id: 'aurora_dust', name: 'Aurora Dust', type: 'material', value: 0, price: 50, desc: 'Shimmering powder from the northern lights.' },
+};
+
+// Crafting recipes — Ilmari the blacksmith
+const CRAFT_RECIPES = [
+  { id: 'craft_rat_blade', name: 'Rat-Tooth Dagger', materials: [{ id: 'rat_fang', qty: 3 }], result: { type: 'weapon', id: 'rat_dagger' }, desc: 'A blade studded with rat fangs. Gross but effective.' },
+  { id: 'craft_troll_armor', name: 'Troll-Hide Vest', materials: [{ id: 'troll_hide', qty: 3 }], result: { type: 'armor', id: 'troll_vest' }, desc: 'Smells terrible. Stops swords.' },
+  { id: 'craft_ghost_ring', name: 'Spectral Band', materials: [{ id: 'ghost_essence', qty: 3 }], result: { type: 'accessory', id: 'spectral_band' }, desc: 'Your hand goes slightly transparent. MP flows freely.' },
+  { id: 'craft_tech_blade', name: 'Overclocked Blade', materials: [{ id: 'tech_chip', qty: 3 }, { id: 'hiisi_bark', qty: 2 }], result: { type: 'weapon', id: 'overclocked_blade' }, desc: 'A sword that runs at 4.2GHz.' },
+  { id: 'craft_drake_mail', name: 'Drakefire Plate', materials: [{ id: 'drake_scale', qty: 4 }], result: { type: 'armor', id: 'drakefire_plate' }, desc: 'Warm in winter. Fireproof all year.' },
+  { id: 'craft_storm_axe', name: 'Thunderstrike Axe', materials: [{ id: 'storm_shard', qty: 3 }, { id: 'drake_scale', qty: 2 }], result: { type: 'weapon', id: 'storm_axe' }, desc: 'Each swing cracks like thunder.' },
+  { id: 'craft_aurora_cloak', name: 'Aurora Cloak', materials: [{ id: 'aurora_dust', qty: 4 }, { id: 'ancient_rune', qty: 2 }], result: { type: 'armor', id: 'aurora_cloak' }, desc: 'Woven from frozen northern lights. Beautiful and impossible.' },
+  { id: 'craft_rune_amulet', name: 'Rune Amulet', materials: [{ id: 'ancient_rune', qty: 3 }], result: { type: 'accessory', id: 'rune_amulet' }, desc: 'Ancient power hums against your chest.' },
+];
+
+// Crafted items (not sold in shops)
+const CRAFTED_WEAPONS = {
+  rat_dagger:        { id: 'rat_dagger', name: 'Rat-Tooth Dagger', attackBonus: 7, price: 0 },
+  overclocked_blade: { id: 'overclocked_blade', name: 'Overclocked Blade', attackBonus: 19, price: 0 },
+  storm_axe:         { id: 'storm_axe', name: 'Thunderstrike Axe', attackBonus: 35, price: 0 },
+};
+const CRAFTED_ARMORS = {
+  troll_vest:     { id: 'troll_vest', name: 'Troll-Hide Vest', defenseBonus: 8, price: 0 },
+  drakefire_plate:{ id: 'drakefire_plate', name: 'Drakefire Plate', defenseBonus: 32, price: 0 },
+  aurora_cloak:   { id: 'aurora_cloak', name: 'Aurora Cloak', defenseBonus: 48, price: 0 },
+};
+const CRAFTED_ACCESSORIES = {
+  spectral_band: { id: 'spectral_band', name: 'Spectral Band', effect: 'mpRegen', value: 4, desc: '+4 MP/turn', price: 0 },
+  rune_amulet:   { id: 'rune_amulet', name: 'Rune Amulet', effect: 'allStats', value: 3, desc: '+3 all stats', price: 0 },
 };
 
 function getShopWeapons(region) {
@@ -624,7 +663,8 @@ function getShopConsumables() {
 }
 
 function getItemById(id) {
-  return WEAPONS[id] || ARMORS[id] || ACCESSORIES[id] || CONSUMABLES[id] || null;
+  return WEAPONS[id] || ARMORS[id] || ACCESSORIES[id] || CONSUMABLES[id]
+    || CRAFTED_WEAPONS[id] || CRAFTED_ARMORS[id] || CRAFTED_ACCESSORIES[id] || null;
 }
 
 function useConsumable(player, itemId) {
@@ -665,7 +705,7 @@ const MONSTERS = {
     levelRange: [1, 2],
     hp: 15, strength: 5, defense: 2, speed: 6, magic: 0,
     xpReward: 15, goldReward: 8,
-    drops: [{ itemId: 'potion_small', chance: 0.2 }],
+    drops: [{ itemId: 'potion_small', chance: 0.2 }, { itemId: 'rat_fang', chance: 0.35 }],
     attacks: ['bite', 'scratch'],
     weaknesses: ['fire'], resistances: [],
     art: 'drawRautatieRotta',
@@ -695,7 +735,7 @@ const MONSTERS = {
     levelRange: [1, 3],
     hp: 30, strength: 8, defense: 4, speed: 3, magic: 0,
     xpReward: 25, goldReward: 15,
-    drops: [{ itemId: 'potion_small', chance: 0.3 }],
+    drops: [{ itemId: 'potion_small', chance: 0.3 }, { itemId: 'troll_hide', chance: 0.3 }],
     attacks: ['punch', 'belch', 'throw_bottle'],
     weaknesses: [], resistances: ['poison'],
     art: 'drawKaljatrolli',
@@ -711,7 +751,7 @@ const MONSTERS = {
     levelRange: [2, 3],
     hp: 22, strength: 7, defense: 3, speed: 5, magic: 4,
     xpReward: 30, goldReward: 20,
-    drops: [{ itemId: 'mana_small', chance: 0.2 }],
+    drops: [{ itemId: 'mana_small', chance: 0.2 }, { itemId: 'ghost_essence', chance: 0.3 }],
     attacks: ['slash', 'ghostly_wail'],
     weaknesses: ['fire', 'lightning'], resistances: ['physical', 'poison'],
     art: 'drawHaamuvartija',
@@ -743,7 +783,7 @@ const MONSTERS = {
     levelRange: [4, 5],
     hp: 45, strength: 14, defense: 8, speed: 7, magic: 6,
     xpReward: 55, goldReward: 35,
-    drops: [{ itemId: 'potion_medium', chance: 0.2 }],
+    drops: [{ itemId: 'potion_medium', chance: 0.2 }, { itemId: 'tech_chip', chance: 0.3 }],
     attacks: ['zap', 'hack', 'overclock'],
     weaknesses: ['ice'], resistances: ['lightning'],
     art: 'drawTeknopeikko',
@@ -759,7 +799,7 @@ const MONSTERS = {
     levelRange: [4, 6],
     hp: 55, strength: 16, defense: 10, speed: 5, magic: 8,
     xpReward: 70, goldReward: 40,
-    drops: [{ itemId: 'antidote', chance: 0.25 }],
+    drops: [{ itemId: 'antidote', chance: 0.25 }, { itemId: 'hiisi_bark', chance: 0.3 }],
     attacks: ['claw', 'dark_magic', 'root_snare'],
     weaknesses: ['fire'], resistances: ['dark', 'poison'],
     art: 'drawNuuksionHiisi',
@@ -825,7 +865,7 @@ const MONSTERS = {
     levelRange: [7, 8],
     hp: 90, strength: 25, defense: 15, speed: 12, magic: 10,
     xpReward: 130, goldReward: 80,
-    drops: [{ itemId: 'potion_large', chance: 0.2 }],
+    drops: [{ itemId: 'potion_large', chance: 0.2 }, { itemId: 'drake_scale', chance: 0.3 }],
     attacks: ['flame_breath', 'tail_whip', 'wing_gust'],
     weaknesses: ['ice'], resistances: ['fire'],
     art: 'drawLentokenttadrake',
@@ -889,7 +929,7 @@ const MONSTERS = {
     levelRange: [8, 9],
     hp: 85, strength: 20, defense: 10, speed: 15, magic: 22,
     xpReward: 145, goldReward: 95,
-    drops: [{ itemId: 'escape_scroll', chance: 0.1 }, { itemId: 'mana_large', chance: 0.2 }],
+    drops: [{ itemId: 'escape_scroll', chance: 0.1 }, { itemId: 'mana_large', chance: 0.2 }, { itemId: 'storm_shard', chance: 0.25 }],
     attacks: ['lightning_bolt', 'gale_force', 'phantom_chill'],
     weaknesses: ['fire'], resistances: ['lightning', 'ice', 'physical'],
     art: 'drawMyrskyhaamu',
@@ -907,7 +947,7 @@ const MONSTERS = {
     levelRange: [10, 11],
     hp: 160, strength: 35, defense: 22, speed: 8, magic: 25,
     xpReward: 250, goldReward: 150,
-    drops: [{ itemId: 'potion_full', chance: 0.15 }],
+    drops: [{ itemId: 'potion_full', chance: 0.15 }, { itemId: 'ancient_rune', chance: 0.25 }],
     attacks: ['ancient_curse', 'claw', 'summon_roots'],
     weaknesses: ['fire'], resistances: ['dark', 'poison', 'physical'],
     art: 'drawIkivanhaHiisi',
@@ -1165,7 +1205,7 @@ const MONSTERS = {
     levelRange: [10, 12], timeOfDay: 'night',
     hp: 170, strength: 33, defense: 20, speed: 14, magic: 30,
     xpReward: 300, goldReward: 170,
-    drops: [{ itemId: 'potion_full', chance: 0.15 }],
+    drops: [{ itemId: 'potion_full', chance: 0.15 }, { itemId: 'aurora_dust', chance: 0.25 }],
     attacks: ['aurora_beam', 'spectral_bite', 'cosmic_cold'],
     weaknesses: ['physical'], resistances: ['fire', 'ice', 'lightning'],
     art: 'drawRevontulihai',
@@ -1235,7 +1275,8 @@ function getRandomMonster(region, playerLevel) {
 function createMonsterInstance(template, playerLevel) {
   // Scale monster stats slightly based on player level within range
   const levelDiff = Math.max(0, playerLevel - template.levelRange[0]);
-  const scale = 1 + levelDiff * 0.1;
+  const ngScale = getNgPlusScale();
+  const scale = (1 + levelDiff * 0.1) * ngScale;
   return {
     ...template,
     hp: Math.round(template.hp * scale),
@@ -1928,6 +1969,7 @@ function saveGame() {
     flags: state.flags,
     bestiary: state.bestiary,
     mapState: state.mapState,
+    ngPlusCount: state.ngPlusCount || 0,
   };
   localStorage.setItem(SAVE_KEY, JSON.stringify(data));
 }
@@ -1946,6 +1988,7 @@ function loadGame() {
     state.flags = data.flags || {};
     state.bestiary = data.bestiary || {};
     state.mapState = data.mapState || {};
+    state.ngPlusCount = data.ngPlusCount || 0;
     return true;
   } catch {
     return false;
@@ -2071,12 +2114,12 @@ function doPlayerAttack(stance) {
   switch (stance) {
     case 'aggressive':
       damageMultiplier = 1.4;
-      hitMessage = 'You attack aggressively!';
+      hitMessage = pick(AGGRESSIVE_TEXTS);
       // Crit chance
       const critChance = 0.15 + (p.accessory?.effect === 'critBonus' ? p.accessory.value : 0);
       if (Math.random() < critChance) {
         damageMultiplier *= 2;
-        hitMessage = 'CRITICAL HIT!';
+        hitMessage = pick(CRIT_TEXTS);
         log.push({ text: hitMessage, color: 'crit' });
       } else {
         log.push({ text: hitMessage, color: 'narrator' });
@@ -2084,7 +2127,7 @@ function doPlayerAttack(stance) {
       break;
     case 'defensive':
       damageMultiplier = 0.8;
-      log.push({ text: 'You attack cautiously, guard raised.', color: 'narrator' });
+      log.push({ text: pick(DEFENSIVE_TEXTS), color: 'narrator' });
       break;
   }
 
@@ -2224,9 +2267,9 @@ function playerRun() {
 
   if (Math.random() < Math.max(0.1, Math.min(0.9, runChance))) {
     cs.result = 'fled';
-    log.push({ text: 'You flee into the darkness!', color: 'narrator' });
+    log.push({ text: pick(FLEE_SUCCESS_TEXTS), color: 'narrator' });
   } else {
-    log.push({ text: 'You failed to escape!', color: 'combat' });
+    log.push({ text: pick(FLEE_FAIL_TEXTS), color: 'combat' });
     doMonsterAttack('aggressive');
     if (p.hp <= 0) handleDefeat();
   }
@@ -2321,7 +2364,7 @@ function handleVictory() {
   const log = cs.log;
 
   cs.result = 'victory';
-  log.push({ text: `You defeated ${m.name}!`, color: 'narrator' });
+  log.push({ text: `${pick(VICTORY_TEXTS)} ${m.name}!`, color: 'narrator' });
   recordBestiaryKill(m.id);
 
   // XP
@@ -2382,7 +2425,7 @@ function handleDefeat() {
   p.gold -= goldLoss;
   p.xp = Math.max(0, p.xp - xpLoss);
 
-  log.push({ text: 'You have been defeated!', color: 'damage' });
+  log.push({ text: pick(DEFEAT_TEXTS), color: 'damage' });
   if (goldLoss > 0) log.push({ text: `Lost ${goldLoss} gold...`, color: 'gold' });
   if (xpLoss > 0) log.push({ text: `Lost ${xpLoss} XP...`, color: 'xp' });
   log.push({ text: 'You wake up at the inn...', color: 'narrator' });
@@ -5672,6 +5715,11 @@ function getTavernMenu(addMsg) {
   for (const ai of aiHere) {
     items.push({ key: String(items.length + 1), label: `Talk to ${ai.name}`, action: 'tavern_ai', data: ai });
   }
+  // Ilmari crafting — available if he's alive and in this region
+  const ilmari = state.aiPlayers.find(a => a.name === 'Ilmari' && a.alive && a.region === state.player.currentRegion);
+  if (ilmari) {
+    items.push({ key: String(items.length + 1), label: 'Craft with Ilmari', action: 'goto_crafting' });
+  }
   items.push({ key: String(items.length + 1), label: 'Dice Game (20g)', action: 'tavern_dice_start', disabled: state.player.gold < 20 });
   items.push({ key: String(items.length + 1), label: 'Back to Town', action: 'goto_town' });
   return items;
@@ -6171,18 +6219,25 @@ function goToScreen(screen) {
       ]);
       break;
 
-    case 'victory':
+    case 'victory': {
       renderScreen();
+      const ngCount = state.ngPlusCount || 0;
       addMsg('*** VICTORY ***', 'levelup');
       addMsg('You have slain the great Lohikaarme!', 'narrator');
+      if (ngCount > 0) {
+        addMsg(`New Game+ ${ngCount} completed! The dragon was ${Math.round(getNgPlusScale() * 100)}% stronger!`, 'event');
+      }
       addMsg('Helsinki and the Capital Region are saved!', 'narrator');
       addMsg('Your legend will be told for generations.', 'narrator');
       addMsg('', 'narrator');
       addMsg(`Final Stats: Level ${state.player.level}, ${state.player.kills} kills, ${state.player.deaths} deaths, Day ${state.dayCount}`, 'system');
+      addMsg(`Bestiary: ${Object.keys(state.bestiary).length} species discovered`, 'system');
       setMenu([
-        { key: '1', label: 'Play Again', action: 'new_game' },
+        { key: '1', label: 'New Game+  (harder, keep gear)', action: 'new_game_plus' },
+        { key: '2', label: 'New Game (fresh start)', action: 'new_game' },
       ]);
       break;
+    }
 
     case 'news':
       renderScreen();
@@ -6320,6 +6375,12 @@ function handleMapMove(dx, dy) {
     sfxEvent();
     addMsg(`You discover: ${landmark.name}`, 'title');
     addMsg(landmark.desc, 'event');
+    // Landmark interaction
+    const changedScreen = handleLandmarkInteraction(landmark, addMsg);
+    if (changedScreen) return; // Combat was triggered
+    updateStatus();
+    goToScreen('forest');
+    return;
   }
 
   // Encounter chances — higher farther from town
@@ -6391,6 +6452,14 @@ function handleMenuAction(item) {
     // Title
     case 'new_game':
       goToScreen('character-create');
+      break;
+    case 'new_game_plus':
+      startNewGamePlus();
+      clearText();
+      addMsg(`*** NEW GAME+ ${state.ngPlusCount} ***`, 'levelup');
+      addMsg(`Monsters are ${Math.round(getNgPlusScale() * 100)}% stronger!`, 'event');
+      addMsg('You keep your weapon, armor, accessory, bestiary, and half your gold.', 'narrator');
+      setTimeout(() => goToScreen('town'), 1000);
       break;
     case 'continue_game':
       if (loadGame()) {
@@ -6527,6 +6596,18 @@ function handleMenuAction(item) {
       tavernGamble(addMsg);
       updateStatus();
       setMenu(getTavernMenu(addMsg));
+      break;
+    case 'goto_crafting':
+      clearText();
+      addMsg('=== Ilmari\'s Forge ===', 'title');
+      setMenu(getCraftingMenu(addMsg));
+      break;
+    case 'craft_item':
+      clearText();
+      craftItem(item.data, addMsg);
+      updateStatus();
+      addMsg('', 'narrator');
+      setMenu(getCraftingMenu(addMsg));
       break;
     case 'tavern_dice_start': {
       clearText();
@@ -6834,6 +6915,222 @@ document.addEventListener('keydown', (e) => {
     }
   }
 });
+
+// ===================== CRAFTING SYSTEM =====================
+function getCraftingMenu(addMsg) {
+  addMsg('"Bring me materials and I\'ll make you something special." — Ilmari', 'npc');
+  addMsg('', 'narrator');
+  const items = CRAFT_RECIPES.map((recipe, i) => {
+    const matStr = recipe.materials.map(m => {
+      const have = hasItem(m.id);
+      const item = CONSUMABLES[m.id];
+      return `${item ? item.name : m.id}: ${have}/${m.qty}`;
+    }).join(', ');
+    const canCraft = recipe.materials.every(m => hasItem(m.id) >= m.qty);
+    const alreadyCrafted = state.flags[`crafted_${recipe.id}`];
+    return {
+      key: String(i + 1),
+      label: `${recipe.name}${alreadyCrafted ? ' [DONE]' : ''} — ${matStr}`,
+      action: 'craft_item',
+      data: recipe,
+      disabled: !canCraft || alreadyCrafted,
+    };
+  });
+  items.push({ key: String(items.length + 1), label: 'Back to Tavern', action: 'goto_tavern' });
+  return items;
+}
+
+function craftItem(recipe, addMsg) {
+  // Check materials
+  for (const mat of recipe.materials) {
+    if (hasItem(mat.id) < mat.qty) {
+      addMsg('Not enough materials!', 'system');
+      return false;
+    }
+  }
+  // Consume materials
+  for (const mat of recipe.materials) {
+    removeInventoryItem(mat.id, mat.qty);
+  }
+  // Grant item
+  const result = recipe.result;
+  if (result.type === 'weapon') {
+    const w = CRAFTED_WEAPONS[result.id];
+    if (w) { state.player.weapon = { ...w }; addMsg(`Ilmari forges the ${w.name}! (ATK+${w.attackBonus})`, 'levelup'); }
+  } else if (result.type === 'armor') {
+    const a = CRAFTED_ARMORS[result.id];
+    if (a) { state.player.armor = { ...a }; addMsg(`Ilmari crafts the ${a.name}! (DEF+${a.defenseBonus})`, 'levelup'); }
+  } else if (result.type === 'accessory') {
+    const ac = CRAFTED_ACCESSORIES[result.id];
+    if (ac) { state.player.accessory = { ...ac }; addMsg(`Ilmari creates the ${ac.name}! (${ac.desc})`, 'levelup'); }
+  }
+  addMsg(`"${recipe.desc}" — Ilmari`, 'npc');
+  state.flags[`crafted_${recipe.id}`] = true;
+  sfxLevelUp();
+  return true;
+}
+
+// ===================== NEW GAME+ =====================
+function startNewGamePlus() {
+  const oldPlayer = state.player;
+  const ngPlusCount = (state.ngPlusCount || 0) + 1;
+
+  // Keep weapon, armor, accessory, bestiary
+  const keptWeapon = { ...oldPlayer.weapon };
+  const keptArmor = { ...oldPlayer.armor };
+  const keptAccessory = oldPlayer.accessory ? { ...oldPlayer.accessory } : null;
+  const keptBestiary = { ...state.bestiary };
+  const keptGold = Math.floor(oldPlayer.gold * 0.5);
+
+  // Reset via createPlayer
+  createPlayer(oldPlayer.name, oldPlayer.class);
+
+  // Restore kept items
+  state.player.weapon = keptWeapon;
+  state.player.armor = keptArmor;
+  state.player.accessory = keptAccessory;
+  state.player.gold = 50 + keptGold;
+  state.bestiary = keptBestiary;
+  state.ngPlusCount = ngPlusCount;
+  state.flags.ng_plus = true;
+}
+
+// Scale monsters harder in NG+
+function getNgPlusScale() {
+  return 1 + (state.ngPlusCount || 0) * 0.3;
+}
+
+// ===================== ENCOUNTER TEXT VARIETY =====================
+const AGGRESSIVE_TEXTS = [
+  'You attack aggressively!',
+  'You charge in with reckless fury!',
+  'You swing with everything you\'ve got!',
+  'No mercy! You lunge forward!',
+  'You unleash a savage strike!',
+];
+const DEFENSIVE_TEXTS = [
+  'You attack cautiously, guard raised.',
+  'You probe for an opening, shield ready.',
+  'A careful strike, watching for counters.',
+  'You feint, then jab cautiously.',
+  'You stay measured, looking for weakness.',
+];
+const CRIT_TEXTS = [
+  'CRITICAL HIT!',
+  'A devastating blow!',
+  'You find the weak spot! CRITICAL!',
+  'Perfect strike! CRITICAL DAMAGE!',
+  'The stars align — MASSIVE HIT!',
+];
+const VICTORY_TEXTS = [
+  'You defeated',
+  'You vanquished',
+  'You destroyed',
+  'You slew',
+  'You obliterated',
+];
+const DEFEAT_TEXTS = [
+  'You have been defeated!',
+  'Darkness takes you...',
+  'You collapse, consciousness fading.',
+  'The last thing you see is the sky.',
+  'Everything goes black.',
+];
+const FLEE_SUCCESS_TEXTS = [
+  'You flee into the darkness!',
+  'You make a tactical retreat!',
+  'You run like your life depends on it. It does.',
+  'Discretion is the better part of valor. You run.',
+  'Your legs make the smart decision your pride wouldn\'t.',
+];
+const FLEE_FAIL_TEXTS = [
+  'You failed to escape!',
+  'Your legs betray you!',
+  'The creature blocks your path!',
+  'You trip over a root! No escape!',
+  'Nowhere to run!',
+];
+
+function pick(arr) {
+  return arr[Math.floor(Math.random() * arr.length)];
+}
+
+// ===================== LANDMARK INTERACTIONS =====================
+const LANDMARK_EFFECTS = {
+  'The Singing Well': { type: 'heal_mp', value: 999, msg: 'The well\'s song restores your magical energy.', sound: 'heal' },
+  'Harbor Rocks': { type: 'gold', value: 15, msg: 'You find coins wedged between the rocks.', sound: 'gold', repeatable: true },
+  'Nuuksio Deep Lake': { type: 'heal_hp', value: 30, msg: 'The cool water soothes your wounds.', sound: 'heal', repeatable: true },
+  'Mossy Boulder': { type: 'heal_hp', value: 20, msg: 'You rest against the moss. Its softness is surprisingly restorative.', sound: 'heal', repeatable: true },
+  'The WiFi Shrine': { type: 'heal_mp', value: 999, msg: 'Full signal. Full mana. The shrine provides.', sound: 'heal' },
+  'River Crossing': { type: 'xp', value: 20, msg: 'You study the strange currents. Something clicks in your mind.', sound: 'event' },
+  'Bus Stop 666': { type: 'random_encounter', msg: 'You wait at the bus stop. Something arrives.', sound: 'event' },
+  'Rune Circle': { type: 'heal_all', value: 999, msg: 'The runes pulse. Your body and mind are made whole.', sound: 'heal' },
+  'The Frozen Spring': { type: 'heal_hp', value: 50, msg: 'You drink the impossible water. Cold clarity floods through you.', sound: 'heal', repeatable: true },
+  'Moonwell': { type: 'heal_mp', value: 999, msg: 'The moonlit water glows as you drink. Magical energy surges back.', sound: 'heal' },
+  'Aurora Pillar': { type: 'xp', value: 50, msg: 'Touching the pillar fills you with ancient knowledge.', sound: 'event' },
+  "Tapio's Grove": { type: 'heal_all', value: 999, msg: 'The ancient trees breathe life into you. Fully restored.', sound: 'heal' },
+  'Kallio Graffiti Wall': { type: 'hint', msg: 'New graffiti reads: "Ilmari crafts. Bring him teeth, hide, and shards."', sound: 'event' },
+  'Startup Graveyard': { type: 'gold', value: 30, msg: 'You salvage some abandoned office equipment and sell it mentally for 30 gold.', sound: 'gold', repeatable: true },
+  'The Bear Scratch Tree': { type: 'hint', msg: 'The claw marks seem to point deeper into the forest. Something valuable lies north.', sound: 'event' },
+  'Crashed Plane': { type: 'item', itemId: 'potion_large', msg: 'You find an intact first aid kit in the wreckage.', sound: 'event' },
+  'Cargo Hangar 7': { type: 'random_encounter', msg: 'The machines inside activate. Something approaches.', sound: 'event' },
+  "Runway's End": { type: 'hint', msg: 'The tire marks lead to a den. Wolves are stronger here at night.', sound: 'event' },
+  'Sampo Altar': { type: 'xp', value: 40, msg: 'Fragments of ancient power seep into you from the broken altar.', sound: 'event' },
+};
+
+function handleLandmarkInteraction(landmark, addMsg) {
+  const effect = LANDMARK_EFFECTS[landmark.name];
+  if (!effect) return false;
+
+  const flagKey = `landmark_used_${landmark.name.replace(/\s/g, '_')}`;
+  if (!effect.repeatable && state.flags[flagKey]) {
+    addMsg('You\'ve already interacted with this place.', 'system');
+    return false;
+  }
+
+  addMsg(effect.msg, 'event');
+  state.flags[flagKey] = true;
+
+  switch (effect.type) {
+    case 'heal_hp':
+      const hpHeal = effect.value === 999 ? state.player.maxHp : effect.value;
+      state.player.hp = Math.min(state.player.maxHp, state.player.hp + hpHeal);
+      break;
+    case 'heal_mp':
+      state.player.mp = state.player.maxMp;
+      break;
+    case 'heal_all':
+      state.player.hp = state.player.maxHp;
+      state.player.mp = state.player.maxMp;
+      break;
+    case 'gold':
+      state.player.gold += effect.value;
+      addMsg(`+${effect.value} gold`, 'gold');
+      break;
+    case 'xp':
+      state.player.xp += effect.value;
+      addMsg(`+${effect.value} XP`, 'xp');
+      if (checkLevelUp()) addMsg(`*** LEVEL UP! Level ${state.player.level}! ***`, 'levelup');
+      break;
+    case 'item':
+      addInventoryItem(effect.itemId);
+      const item = getItemById(effect.itemId);
+      addMsg(`Found: ${item ? item.name : effect.itemId}`, 'event');
+      break;
+    case 'random_encounter':
+      startCombat();
+      goToScreen('combat');
+      return true; // Signal that we changed screen
+    case 'hint':
+      break; // Message already shown
+  }
+
+  if (effect.sound === 'heal') sfxHeal();
+  else if (effect.sound === 'gold') sfxGold();
+  else if (effect.sound === 'event') sfxEvent();
+
+  return false;
+}
 
 // ===================== AUDIO TOGGLES =====================
 document.getElementById('btnMusic').addEventListener('click', () => {
