@@ -1,5 +1,39 @@
 # Changelog
 
+## [0.8.0] - 2026-04-06
+
+### Added
+- **Weather system** — 4 types (clear, rain, snow, fog)
+  - Visual overlays: rain streaks, snowflakes, fog bands
+  - Combat effects: rain buffs lightning/weakens fire, snow buffs ice, fog reduces accuracy
+  - Weather-specific flavor text in the forest
+  - Weather changes on day advance and ~10% chance per map step
+  - Region-specific weather weights (more snow in Kauniainen, more rain in Helsinki)
+  - Katariina charm bonus reduces weather accuracy penalties
+  - Weather shown in status bar
+- **Achievement system** — 23 achievements with toast notifications
+  - Categories: combat, levels, wealth, exploration, bestiary, dragon, NG+, dice, crafting, charm, survival, weather
+  - Toast popup on unlock, trophy screen via Stats > Achievements
+  - Persistent across save/load
+- **Rotating shop inventory** — daily specials section
+  - Discounted next-tier weapons and armor rotate each day
+  - Rare consumables (Full Potion, Escape Scroll) available as specials
+  - Saara charm bonus stacks as shop discount on all items
+
+### Changed
+- **Charm system reworked** — no longer spammable
+  - One conversation per NPC per day (resets on inn rest)
+  - NPCs have moods (happy/neutral/annoyed) that change daily
+  - Happy mood: +1 bonus charm. Annoyed mood: reduced gain, bold options can backfire and lose charm
+  - Risky dialogue options marked with "(risky)" when NPC is annoyed
+  - **Ongoing passive bonuses** from charm (scale with charm level 0-10):
+    - Saara: up to 20% shop discount
+    - Juhani: up to 15% XP bonus on combat victories
+    - Katariina: up to 50% weather penalty resistance
+    - Tapio: up to 5 HP regen after each victory
+  - Charm level and current bonus displayed during dialogue
+  - Threshold rewards (gold, items, unique accessories) still exist at 3/6/10
+
 ## [0.7.1] - 2026-04-06
 
 ### Added

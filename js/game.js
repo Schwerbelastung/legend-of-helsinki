@@ -447,6 +447,9 @@ function finishDiceGame(addMsg) {
     state.player.gold += winnings;
     addMsg(`You win ${winnings} gold!`, 'gold');
     sfxGold();
+    state.flags.dice_wins = (state.flags.dice_wins || 0) + 1;
+    if (result.multiplier === 10) state.flags.dice_five_of_kind = true;
+    checkAchievements(addMsg);
   } else {
     addMsg('You lose your bet. Better luck next time.', 'system');
   }
@@ -1756,6 +1759,8 @@ const state = {
   bestiary: {},
   mapState: {},
   bestiaryViewId: null,
+  weather: 'clear',
+  achievements: {},
 };
 
 function createPlayer(name, playerClass) {
@@ -1797,6 +1802,8 @@ function createPlayer(name, playerClass) {
     'The Red Dragon terrorizes the land...',
     'Brave souls gather at the inn.',
   ];
+  state.flags.visited_helsinki = true;
+  rollWeather();
   initAiPlayers();
   initQuestBoard();
 }
@@ -1845,6 +1852,7 @@ function checkLevelUp() {
 function advanceDay() {
   state.dayCount++;
   state.timeTick = 4; // Reset to morning
+  rollWeather();
   simulateAiPlayers();
 }
 
@@ -1970,6 +1978,8 @@ function saveGame() {
     bestiary: state.bestiary,
     mapState: state.mapState,
     ngPlusCount: state.ngPlusCount || 0,
+    weather: state.weather,
+    achievements: state.achievements,
   };
   localStorage.setItem(SAVE_KEY, JSON.stringify(data));
 }
@@ -1989,6 +1999,8 @@ function loadGame() {
     state.bestiary = data.bestiary || {};
     state.mapState = data.mapState || {};
     state.ngPlusCount = data.ngPlusCount || 0;
+    state.weather = data.weather || 'clear';
+    state.achievements = data.achievements || {};
     return true;
   } catch {
     return false;
@@ -2025,6 +2037,17 @@ function startCombat(monsterTemplate) {
   state.combatState.log.push({ text: `A ${monster.name} appears!`, color: 'combat' });
 
   recordBestiaryEntry(monster.id);
+
+  // Track weather combat for achievements
+  const w = getWeather();
+  if (w === 'rain') state.flags.fought_rain = true;
+  if (w === 'snow') state.flags.fought_snow = true;
+  if (w === 'fog') state.flags.fought_fog = true;
+
+  // Show weather combat effects
+  const wmod = getWeatherCombatMod();
+  if (wmod.desc) state.combatState.log.push({ text: wmod.desc, color: 'system' });
+
   return state.combatState;
 }
 
@@ -2129,6 +2152,14 @@ function doPlayerAttack(stance) {
       damageMultiplier = 0.8;
       log.push({ text: pick(DEFENSIVE_TEXTS), color: 'narrator' });
       break;
+  }
+
+  // Weather accuracy check (fog)
+  const weatherMod = getWeatherCombatMod();
+  const missChance = Math.abs(weatherMod.accuracyMod || 0) * (1 - getCharmBonus('weather_resist'));
+  if (missChance > 0 && Math.random() < missChance) {
+    log.push({ text: 'Your attack misses in the poor visibility!', color: 'system' });
+    return;
   }
 
   // Check magic-only enemies
@@ -2408,6 +2439,31 @@ function handleVictory() {
       log.push({ text: `New spell learned: ${newSpell.name}!`, color: 'magic' });
     }
   }
+
+  // XP bonus from Juhani charm
+  const xpCharmBonus = getCharmBonus('xp_bonus');
+  if (xpCharmBonus > 0) {
+    const bonusXp = Math.round(xpGain * xpCharmBonus);
+    if (bonusXp > 0) {
+      p.xp += bonusXp;
+      log.push({ text: `Juhani's insight: +${bonusXp} bonus XP`, color: 'xp' });
+    }
+  }
+
+  // Track night kills
+  if (m.timeOfDay === 'night') {
+    state.flags.night_kills = (state.flags.night_kills || 0) + 1;
+  }
+
+  // Tapio charm HP regen
+  const charmRegen = getCharmBonus('hp_regen');
+  if (charmRegen > 0 && p.hp < p.maxHp) {
+    const regen = Math.min(Math.floor(charmRegen), p.maxHp - p.hp);
+    p.hp += regen;
+    if (regen > 0) log.push({ text: `Tapio's blessing: +${regen} HP`, color: 'heal' });
+  }
+
+  checkAchievements(null);
 }
 
 function handleDefeat() {
@@ -5562,13 +5618,16 @@ function innSave(addMsg) {
 
 // ===================== SHOP =====================
 function getShopMenu(addMsg) {
+  const discount = getCharmBonus('shop_discount');
+  if (discount > 0) addMsg(`Saara's connections: ${Math.round(discount * 100)}% off all items!`, 'event');
   return [
     { key: '1', label: 'Buy Weapons', action: 'shop_weapons' },
     { key: '2', label: 'Buy Armor', action: 'shop_armor' },
     { key: '3', label: 'Buy Accessories', action: 'shop_accessories' },
     { key: '4', label: 'Buy Potions', action: 'shop_potions' },
-    { key: '5', label: 'Sell Equipment', action: 'shop_sell' },
-    { key: '6', label: 'Back to Town', action: 'goto_town' },
+    { key: '5', label: "Today's Specials", action: 'shop_specials' },
+    { key: '6', label: 'Sell Equipment', action: 'shop_sell' },
+    { key: '7', label: 'Back to Town', action: 'goto_town' },
   ];
 }
 
@@ -5579,6 +5638,13 @@ function getShopBuyMenu(type, addMsg) {
     case 'armor': items = getShopArmors(state.player.currentRegion); break;
     case 'accessories': items = getShopAccessories(state.player.currentRegion); break;
     case 'potions': items = getShopConsumables(); break;
+    case 'specials': items = getDailySpecials(); break;
+  }
+
+  // Apply Saara charm discount to regular items
+  const discount = getCharmBonus('shop_discount');
+  if (discount > 0 && type !== 'specials') {
+    items = items.map(item => ({ ...item, price: Math.floor(item.price * (1 - discount)) }));
   }
 
   const menuItems = items.map((item, i) => {
@@ -5729,31 +5795,82 @@ function getCharmDialogueMenu(addMsg) {
   const npc = getTavernNpc(state.player.currentRegion);
   if (!npc) return [];
 
-  addMsg(npc.greeting, 'narrator');
+  const mood = getNpcMood(npc.id);
+  const canCharm = canCharmToday(npc.id);
+  const charmLvl = getCharmLevel(npc.id);
 
-  return npc.dialogueOptions.map((opt, i) => ({
-    key: String(i + 1),
-    label: opt.text,
-    action: 'charm_choice',
-    data: { npcId: npc.id, optionIndex: i },
-  })).concat([
-    { key: String(npc.dialogueOptions.length + 1), label: 'Leave', action: 'goto_tavern' }
-  ]);
+  addMsg(npc.greeting, 'narrator');
+  addMsg(`${npc.name} ${getMoodLabel(mood)}.`, 'system');
+
+  if (!canCharm) {
+    addMsg(`You've already chatted with ${npc.name} today. Come back tomorrow.`, 'system');
+    if (charmLvl > 0) {
+      addMsg(`(Charm: ${charmLvl}/10)`, 'system');
+      // Show ongoing bonus
+      const bonusDesc = getCharmBonusDesc(npc.id);
+      if (bonusDesc) addMsg(`Ongoing bonus: ${bonusDesc}`, 'event');
+    }
+    return [{ key: '1', label: 'Leave', action: 'goto_tavern' }];
+  }
+
+  addMsg(`(Charm: ${charmLvl}/10 | Mood: ${mood})`, 'system');
+
+  // Different options work better with different moods
+  const items = npc.dialogueOptions.map((opt, i) => {
+    const moodHint = mood === 'annoyed' && opt.charm >= 2 ? ' (risky)' : '';
+    return {
+      key: String(i + 1),
+      label: `${opt.text}${moodHint}`,
+      action: 'charm_choice',
+      data: { npcId: npc.id, optionIndex: i },
+    };
+  });
+  items.push({ key: String(items.length + 1), label: 'Leave', action: 'goto_tavern' });
+  return items;
+}
+
+function getCharmBonusDesc(npcId) {
+  switch (npcId) {
+    case 'saara': return `Shop discount: ${Math.round(getCharmBonus('shop_discount') * 100)}%`;
+    case 'juhani': return `XP bonus: +${Math.round(getCharmBonus('xp_bonus') * 100)}%`;
+    case 'katariina': return `Weather resist: ${Math.round(getCharmBonus('weather_resist') * 100)}%`;
+    case 'tapio': return `HP regen: +${Math.floor(getCharmBonus('hp_regen'))}/fight`;
+    default: return '';
+  }
 }
 
 function handleCharmChoice(npcId, optionIndex, addMsg) {
   const npc = getTavernNpc(state.player.currentRegion);
   if (!npc || npc.id !== npcId) return;
+  if (!canCharmToday(npcId)) return;
 
   const option = npc.dialogueOptions[optionIndex];
   if (!option) return;
 
+  const mood = getNpcMood(npcId);
   const response = option.responses[Math.floor(Math.random() * option.responses.length)];
   addMsg(response, 'npc');
 
-  addCharm(npcId, option.charm);
+  // Mood affects charm gain
+  const gain = getCharmGain(option.charm, mood);
+
+  // Annoyed + bold move can backfire
+  if (mood === 'annoyed' && option.charm >= 2 && Math.random() < 0.4) {
+    addMsg(`${npc.name} frowns. That was the wrong approach.`, 'system');
+    addCharm(npcId, -1); // Lose charm!
+  } else if (gain > 0) {
+    addCharm(npcId, gain);
+    if (mood === 'happy') addMsg(`${npc.name} seems delighted! (+${gain} charm)`, 'event');
+  } else {
+    addMsg(`${npc.name} barely reacts.`, 'system');
+  }
+
+  markCharmedToday(npcId);
   const charmLevel = getCharmLevel(npcId);
-  addMsg(`(Charm with ${npc.name}: ${charmLevel})`, 'system');
+  addMsg(`(Charm with ${npc.name}: ${charmLevel}/10)`, 'system');
+
+  const bonusDesc = getCharmBonusDesc(npcId);
+  if (bonusDesc && charmLevel > 0) addMsg(`Ongoing: ${bonusDesc}`, 'system');
 
   const rewards = checkCharmReward(npcId);
   if (rewards) {
@@ -5870,6 +5987,9 @@ function travelTo(regionId, addMsg) {
   if (ms) { ms.playerX = TOWN_POS.x; ms.playerY = TOWN_POS.y; }
   const region = getRegion(regionId);
   addMsg(`You travel to ${region.name}...`, 'narrator');
+  state.flags[`visited_${regionId}`] = true;
+  rollWeather();
+  checkAchievements(addMsg);
 }
 
 // ===================== STATS =====================
@@ -5885,7 +6005,8 @@ function showStats(addMsg) {
   if (p.accessory) {
     addMsg(`Accessory: ${p.accessory.name} (${p.accessory.desc})`, 'narrator');
   }
-  addMsg(`Kills: ${p.kills}  Deaths: ${p.deaths}  Day: ${state.dayCount}`, 'system');
+  addMsg(`Kills: ${p.kills}  Deaths: ${p.deaths}  Day: ${state.dayCount}  Weather: ${WEATHER_NAMES[getWeather()]}`, 'system');
+  addMsg(`Achievements: ${getAchievementCount()}/${ACHIEVEMENTS.length}`, 'event');
 
   // Inventory
   if (p.inventory.length > 0) {
@@ -5918,9 +6039,9 @@ function getStatsMenu() {
   });
 
   if (usable.length > 0) {
-    items.push({ key: '1', label: 'Use Item', action: 'stats_use_item' });
+    items.push({ key: String(items.length + 1), label: 'Use Item', action: 'stats_use_item' });
   }
-
+  items.push({ key: String(items.length + 1), label: 'Achievements', action: 'view_achievements' });
   items.push({ key: String(items.length + 1), label: 'Back to Town', action: 'goto_town' });
   return items;
 }
@@ -6025,7 +6146,8 @@ function updateStatus() {
   statusBar.gold.textContent = `${p.gold}g`;
   const region = getRegion(p.currentRegion);
   const timeIcon = { dawn: '🌅', day: '☀️', dusk: '🌆', night: '🌙' };
-  statusBar.region.textContent = `${region.name} ${timeIcon[getTimeOfDay()] || ''}`;
+  const weatherIcon = { clear: '', rain: '🌧', snow: '❄', fog: '🌫' };
+  statusBar.region.textContent = `${region.name} ${timeIcon[getTimeOfDay()] || ''}${weatherIcon[getWeather()] || ''}`;
 }
 
 // ===================== SCREEN RENDERING =====================
@@ -6050,10 +6172,11 @@ function renderScreen() {
     case 'map': drawMapScreen(); break;
     case 'bestiary': drawBestiaryScreen(state.bestiaryViewId); break;
   }
-  // Apply day/night tint overlay to gameplay screens
+  // Apply day/night tint and weather overlays to gameplay screens
   const tintScreens = ['town','inn','shop','healer','tavern','forest','combat','event'];
   if (state.player && tintScreens.includes(state.screen)) {
     applyTimeOverlay();
+    applyWeatherOverlay();
   }
   updateStatus();
 }
@@ -6180,6 +6303,8 @@ function goToScreen(screen) {
       }
       addMsg(timeDesc[getTimeOfDay()], 'system');
       addMsg('WASD/Arrows to move, M for map', 'subtitle');
+      const wFlav = getWeatherFlavorText();
+      if (wFlav) addMsg(wFlav, 'system');
       setMenu(getForestMenu());
       break;
     }
@@ -6349,6 +6474,15 @@ function handleMapMove(dx, dy) {
   if (!movePlayer(dx, dy)) {
     addMsg("You can't go that way.", 'system');
     return;
+  }
+
+  // Small chance weather changes mid-exploration
+  if (Math.random() < 0.1) {
+    const oldW = getWeather();
+    rollWeather();
+    if (getWeather() !== oldW) {
+      addMsg(`The weather shifts to ${WEATHER_NAMES[getWeather()].toLowerCase()}.`, 'system');
+    }
   }
 
   // Advance time
@@ -6539,6 +6673,12 @@ function handleMenuAction(item) {
       clearText();
       addMsg('=== Potions ===', 'title');
       setMenu(getShopBuyMenu('potions', addMsg));
+      break;
+    case 'shop_specials':
+      clearText();
+      addMsg("=== Today's Specials ===", 'title');
+      addMsg('Items rotate daily. Discounted or rare!', 'system');
+      setMenu(getShopBuyMenu('specials', addMsg));
       break;
     case 'shop_sell':
       clearText();
@@ -6776,6 +6916,8 @@ function handleMenuAction(item) {
       }
       // Check if dragon spirit defeated = VICTORY
       if (state.combatState?.monster?.id === 'lohikaarme_spirit') {
+        state.flags.dragon_slain = true;
+        checkAchievements(null);
         goToScreen('victory');
         break;
       }
@@ -6844,6 +6986,21 @@ function handleMenuAction(item) {
       showStats(addMsg);
       setMenu(getStatsItemMenu());
       break;
+    case 'view_achievements': {
+      clearText();
+      checkAchievements(addMsg);
+      addMsg(`=== Achievements (${getAchievementCount()}/${ACHIEVEMENTS.length}) ===`, 'title');
+      for (const ach of ACHIEVEMENTS) {
+        const unlocked = state.achievements[ach.id];
+        if (unlocked) {
+          addMsg(`  [x] ${ach.name} — ${ach.desc}`, 'quest');
+        } else {
+          addMsg(`  [ ] ${ach.name} — ${ach.desc}`, 'system');
+        }
+      }
+      setMenu([{ key: '1', label: 'Back', action: 'goto_stats' }]);
+      break;
+    }
 
     case 'none':
       break;
@@ -6916,6 +7073,256 @@ document.addEventListener('keydown', (e) => {
   }
 });
 
+// ===================== WEATHER SYSTEM =====================
+const WEATHER_TYPES = ['clear', 'rain', 'snow', 'fog'];
+const WEATHER_NAMES = { clear: 'Clear', rain: 'Rain', snow: 'Snow', fog: 'Fog' };
+const WEATHER_ICONS = { clear: '', rain: '~', snow: '*', fog: '.' };
+
+// Region weather weights: [clear, rain, snow, fog]
+const REGION_WEATHER = {
+  helsinki: [0.4, 0.35, 0.1, 0.15],
+  espoo:   [0.35, 0.25, 0.15, 0.25],
+  vantaa:  [0.3, 0.3, 0.15, 0.25],
+  kauniainen: [0.2, 0.15, 0.35, 0.3],
+};
+
+function rollWeather() {
+  const region = state.player ? state.player.currentRegion : 'helsinki';
+  const weights = REGION_WEATHER[region] || REGION_WEATHER.helsinki;
+  const roll = Math.random();
+  let cum = 0;
+  for (let i = 0; i < weights.length; i++) {
+    cum += weights[i];
+    if (roll <= cum) { state.weather = WEATHER_TYPES[i]; return; }
+  }
+  state.weather = 'clear';
+}
+
+function getWeather() {
+  return state.weather || 'clear';
+}
+
+function getWeatherCombatMod() {
+  // Returns {atkMod, defMod, magicMod, accuracyMod, desc}
+  switch (getWeather()) {
+    case 'rain':
+      return { fireMod: -0.3, lightningMod: 0.3, accuracyMod: -0.05, desc: 'Rain weakens fire, strengthens lightning.' };
+    case 'snow':
+      return { fireMod: -0.2, iceMod: 0.3, speedMod: -1, desc: 'Snow strengthens ice, slows movement.' };
+    case 'fog':
+      return { accuracyMod: -0.15, desc: 'Fog reduces accuracy for both sides.' };
+    default:
+      return { desc: '' };
+  }
+}
+
+function applyWeatherOverlay() {
+  const w = getWeather();
+  if (w === 'clear') return;
+  if (w === 'rain') {
+    ctx.fillStyle = 'rgba(30,40,80,0.08)';
+    ctx.fillRect(0, 0, 320, 200);
+    for (let i = 0; i < 30; i++) {
+      const rx = (i * 11 + state.timeTick * 7) % 318;
+      const ry = (i * 17 + state.timeTick * 13) % 195;
+      ctx.fillStyle = 'rgba(120,140,200,0.2)';
+      ctx.fillRect(rx, ry, 1, 4);
+    }
+  } else if (w === 'snow') {
+    ctx.fillStyle = 'rgba(200,210,240,0.06)';
+    ctx.fillRect(0, 0, 320, 200);
+    for (let i = 0; i < 20; i++) {
+      const sx = (i * 17 + state.timeTick * 5) % 316;
+      const sy = (i * 11 + state.timeTick * 9) % 196;
+      ctx.fillStyle = 'rgba(255,255,255,0.3)';
+      ctx.fillRect(sx, sy, 2, 2);
+    }
+  } else if (w === 'fog') {
+    ctx.fillStyle = 'rgba(160,160,170,0.10)';
+    ctx.fillRect(0, 0, 320, 200);
+    for (let i = 0; i < 8; i++) {
+      ctx.fillStyle = 'rgba(180,180,190,0.06)';
+      ctx.fillRect(0, 40 + i * 20 + (state.timeTick % 3) * 2, 320, 10);
+    }
+  }
+}
+
+function getWeatherFlavorText() {
+  switch (getWeather()) {
+    case 'rain': return pick(['Rain patters through the leaves.', 'Your boots squelch in the mud.', 'The rain is cold. Very Finnish.', 'Puddles form on the path. Something ripples in one.']);
+    case 'snow': return pick(['Snowflakes drift silently down.', 'Fresh snow muffles all sound.', 'The cold bites at your fingers.', 'Your footprints are the only marks in the snow.']);
+    case 'fog': return pick(['Thick fog limits your vision.', 'Shapes move in the mist. Probably trees.', 'You can barely see your own hands.', 'The fog swallows every sound.']);
+    default: return '';
+  }
+}
+
+// ===================== ACHIEVEMENT SYSTEM =====================
+const ACHIEVEMENTS = [
+  { id: 'first_blood', name: 'First Blood', desc: 'Defeat your first monster', check: () => state.player && state.player.kills >= 1 },
+  { id: 'monster_hunter', name: 'Monster Hunter', desc: 'Defeat 50 monsters', check: () => state.player && state.player.kills >= 50 },
+  { id: 'centurion', name: 'Centurion', desc: 'Defeat 100 monsters', check: () => state.player && state.player.kills >= 100 },
+  { id: 'level_5', name: 'Getting Stronger', desc: 'Reach level 5', check: () => state.player && state.player.level >= 5 },
+  { id: 'level_10', name: 'Seasoned Adventurer', desc: 'Reach level 10', check: () => state.player && state.player.level >= 10 },
+  { id: 'max_level', name: 'Legendary', desc: 'Reach level 12', check: () => state.player && state.player.level >= 12 },
+  { id: 'wealthy', name: 'Loaded', desc: 'Have 1000 gold at once', check: () => state.player && state.player.gold >= 1000 },
+  { id: 'rich', name: 'Filthy Rich', desc: 'Have 5000 gold at once', check: () => state.player && state.player.gold >= 5000 },
+  { id: 'explorer', name: 'Explorer', desc: 'Visit all 4 regions', check: () => state.player && state.flags.visited_helsinki && state.flags.visited_espoo && state.flags.visited_vantaa && state.flags.visited_kauniainen },
+  { id: 'cartographer', name: 'Cartographer', desc: 'Discover 20 landmarks', check: () => countDiscoveredLandmarks() >= 20 },
+  { id: 'bestiary_10', name: 'Field Researcher', desc: 'Record 10 species in bestiary', check: () => Object.keys(state.bestiary || {}).length >= 10 },
+  { id: 'bestiary_all', name: 'Monster Professor', desc: 'Record all monster species', check: () => Object.keys(state.bestiary || {}).length >= 30 },
+  { id: 'dragon_slayer', name: 'Dragon Slayer', desc: 'Defeat the Lohikaarme', check: () => state.flags.dragon_slain },
+  { id: 'ng_plus', name: 'Back for More', desc: 'Start New Game+', check: () => (state.ngPlusCount || 0) >= 1 },
+  { id: 'ng_plus_3', name: 'Glutton for Punishment', desc: 'Reach New Game+ 3', check: () => (state.ngPlusCount || 0) >= 3 },
+  { id: 'dice_winner', name: 'Lucky Roller', desc: 'Win 5 dice games', check: () => (state.flags.dice_wins || 0) >= 5 },
+  { id: 'dice_five', name: 'YAHTZEE!', desc: 'Roll Five of a Kind', check: () => state.flags.dice_five_of_kind },
+  { id: 'first_craft', name: 'Apprentice Smith', desc: 'Craft your first item', check: () => state.flags.first_craft },
+  { id: 'charmer', name: 'Silver Tongue', desc: 'Reach max charm with any NPC', check: () => state.player && Object.values(state.player.charm || {}).some(c => c >= 10) },
+  { id: 'all_charm', name: 'Irresistible', desc: 'Reach max charm with all 4 tavern NPCs', check: () => state.player && ['saara','juhani','katariina','tapio'].every(id => (state.player.charm[id] || 0) >= 10) },
+  { id: 'survivor', name: 'Survivor', desc: 'Die and come back 5 times', check: () => state.player && state.player.deaths >= 5 },
+  { id: 'night_owl', name: 'Night Owl', desc: 'Defeat 10 night-only monsters', check: () => (state.flags.night_kills || 0) >= 10 },
+  { id: 'weathered', name: 'Weathered', desc: 'Fight in rain, snow, and fog', check: () => state.flags.fought_rain && state.flags.fought_snow && state.flags.fought_fog },
+];
+
+function countDiscoveredLandmarks() {
+  let count = 0;
+  for (const region of ['helsinki', 'espoo', 'vantaa', 'kauniainen']) {
+    if (!state.mapState[region]) continue;
+    const landmarks = LANDMARKS[region] || [];
+    for (const lm of landmarks) {
+      if (lm.type === 'landmark' && isExplored(region, lm.x, lm.y)) count++;
+    }
+  }
+  return count;
+}
+
+function checkAchievements(addMsg) {
+  if (!state.achievements) state.achievements = {};
+  for (const ach of ACHIEVEMENTS) {
+    if (state.achievements[ach.id]) continue;
+    try {
+      if (ach.check()) {
+        state.achievements[ach.id] = { unlocked: state.dayCount };
+        if (addMsg) addMsg(`Achievement: ${ach.name}!`, 'levelup');
+        showAchievementToast(ach.name);
+        sfxLevelUp();
+      }
+    } catch (e) { /* ignore check errors */ }
+  }
+}
+
+function showAchievementToast(name) {
+  const toast = document.createElement('div');
+  toast.style.cssText = `
+    position:fixed; top:20px; right:20px; padding:10px 16px;
+    background:#1a1a2a; border:1px solid #e0c060; border-radius:4px;
+    font-family:'Press Start 2P',monospace; font-size:8px; color:#e0c060;
+    z-index:100; opacity:1; transition:opacity 0.5s;
+    pointer-events:none; box-shadow:0 0 15px rgba(224,192,96,0.3);
+  `;
+  toast.textContent = `Achievement: ${name}`;
+  document.body.appendChild(toast);
+  setTimeout(() => { toast.style.opacity = '0'; }, 2500);
+  setTimeout(() => toast.remove(), 3200);
+}
+
+function getAchievementCount() {
+  return Object.keys(state.achievements || {}).length;
+}
+
+// ===================== CHARM REWORK =====================
+// Charm is now limited per day, NPCs have moods, and charm grants ongoing bonuses.
+
+function getCharmCooldownKey(npcId) {
+  return `charm_cd_${npcId}_day${state.dayCount}`;
+}
+
+function canCharmToday(npcId) {
+  return !state.flags[getCharmCooldownKey(npcId)];
+}
+
+function markCharmedToday(npcId) {
+  state.flags[getCharmCooldownKey(npcId)] = true;
+}
+
+function getNpcMood(npcId) {
+  // Mood based on: day count, player level, player charm, random seed per day
+  const seed = (state.dayCount * 7 + npcId.charCodeAt(0)) % 10;
+  const charm = getCharmLevel(npcId);
+  if (charm >= 8) return 'happy';    // High charm = always happy
+  if (seed < 3) return 'happy';
+  if (seed < 7) return 'neutral';
+  return 'annoyed';
+}
+
+function getMoodLabel(mood) {
+  switch (mood) {
+    case 'happy': return 'in a great mood';
+    case 'neutral': return 'seems distracted';
+    case 'annoyed': return 'looks irritated';
+  }
+}
+
+function getCharmGain(baseCh, mood) {
+  switch (mood) {
+    case 'happy': return baseCh + 1;    // Bonus charm
+    case 'neutral': return baseCh;
+    case 'annoyed': return Math.max(0, baseCh - 1);  // Reduced, can be 0
+  }
+  return baseCh;
+}
+
+// Ongoing charm bonuses (checked during gameplay)
+function getCharmBonus(type) {
+  if (!state.player) return 0;
+  const charm = state.player.charm || {};
+  switch (type) {
+    case 'shop_discount':  // Saara: press connections = discounts
+      return Math.min(0.2, (charm.saara || 0) * 0.02);
+    case 'xp_bonus':       // Juhani: analytical mind = XP
+      return Math.min(0.15, (charm.juhani || 0) * 0.015);
+    case 'weather_resist':  // Katariina: traveler = weather resist
+      return Math.min(0.5, (charm.katariina || 0) * 0.05);
+    case 'hp_regen':        // Tapio: nature spirit = forest regen
+      return Math.min(5, (charm.tapio || 0) * 0.5);
+    default: return 0;
+  }
+}
+
+// ===================== ROTATING SHOP =====================
+function getDailySpecials() {
+  const seed = state.dayCount * 13 + 7;
+  const specials = [];
+  const region = state.player.currentRegion;
+  const regions = ['helsinki', 'espoo', 'vantaa', 'kauniainen'];
+  const ri = regions.indexOf(region);
+
+  // Daily special weapon: random from next tier (or same if highest)
+  const nextRegion = ri < 3 ? regions[ri + 1] : region;
+  const nextWeapons = Object.values(WEAPONS).filter(w => w.region === nextRegion && w.price > 0 && !w.quest);
+  if (nextWeapons.length > 0) {
+    const w = nextWeapons[seed % nextWeapons.length];
+    const discount = 0.7 - getCharmBonus('shop_discount');
+    specials.push({ ...w, price: Math.floor(w.price * discount), isSpecial: true, originalPrice: w.price });
+  }
+
+  // Daily special armor from next tier
+  const nextArmors = Object.values(ARMORS).filter(a => a.region === nextRegion && a.price > 0);
+  if (nextArmors.length > 0) {
+    const a = nextArmors[(seed + 3) % nextArmors.length];
+    const discount = 0.7 - getCharmBonus('shop_discount');
+    specials.push({ ...a, price: Math.floor(a.price * discount), isSpecial: true, originalPrice: a.price });
+  }
+
+  // Rare consumable rotation
+  const rareConsumables = [
+    { id: 'potion_full', name: 'Full Potion', type: 'heal', value: 0, price: 200, desc: 'Full HP restore', isSpecial: true },
+    { id: 'escape_scroll', name: 'Escape Scroll', type: 'escape', value: 0, price: 40, desc: 'Flee combat (100%)', isSpecial: true },
+  ];
+  specials.push(rareConsumables[seed % rareConsumables.length]);
+
+  return specials;
+}
+
 // ===================== CRAFTING SYSTEM =====================
 function getCraftingMenu(addMsg) {
   addMsg('"Bring me materials and I\'ll make you something special." — Ilmari', 'npc');
@@ -6966,6 +7373,8 @@ function craftItem(recipe, addMsg) {
   }
   addMsg(`"${recipe.desc}" — Ilmari`, 'npc');
   state.flags[`crafted_${recipe.id}`] = true;
+  state.flags.first_craft = true;
+  checkAchievements(null);
   sfxLevelUp();
   return true;
 }

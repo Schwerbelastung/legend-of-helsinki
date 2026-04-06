@@ -586,6 +586,127 @@
   state.player.currentRegion = 'helsinki';
   assert(!canFightDragon(), 'Cannot fight dragon outside Kauniainen');
 
+  // --- Weather System ---
+  suite('Weather System');
+  createPlayer('TestHero', 'warrior');
+  state.weather = 'clear';
+  assertEqual(getWeather(), 'clear', 'Default weather is clear');
+  rollWeather();
+  assert(WEATHER_TYPES.includes(getWeather()), 'rollWeather sets valid weather type');
+
+  const wmod = getWeatherCombatMod();
+  assertTruthy(wmod, 'getWeatherCombatMod returns an object');
+  assert('desc' in wmod, 'Weather mod has desc field');
+
+  state.weather = 'rain';
+  const rainMod = getWeatherCombatMod();
+  assertTruthy(rainMod.fireMod, 'Rain has fire modifier');
+  assertTruthy(rainMod.lightningMod, 'Rain has lightning modifier');
+
+  state.weather = 'fog';
+  const fogMod = getWeatherCombatMod();
+  assertTruthy(fogMod.accuracyMod, 'Fog has accuracy modifier');
+  assert(fogMod.accuracyMod < 0, 'Fog accuracy modifier is negative');
+
+  state.weather = 'snow';
+  const snowMod = getWeatherCombatMod();
+  assertTruthy(snowMod.iceMod, 'Snow has ice modifier');
+
+  state.weather = 'clear';
+
+  // --- Achievements ---
+  suite('Achievement System');
+  createPlayer('TestHero', 'warrior');
+  state.achievements = {};
+  assertEqual(getAchievementCount(), 0, 'No achievements at start');
+
+  state.player.kills = 1;
+  checkAchievements(null);
+  assertTruthy(state.achievements.first_blood, 'First Blood unlocked at 1 kill');
+
+  state.player.kills = 50;
+  checkAchievements(null);
+  assertTruthy(state.achievements.monster_hunter, 'Monster Hunter unlocked at 50 kills');
+
+  state.player.level = 5;
+  checkAchievements(null);
+  assertTruthy(state.achievements.level_5, 'Level 5 achievement unlocked');
+
+  state.player.gold = 1000;
+  checkAchievements(null);
+  assertTruthy(state.achievements.wealthy, 'Wealthy achievement at 1000 gold');
+
+  state.player.deaths = 5;
+  checkAchievements(null);
+  assertTruthy(state.achievements.survivor, 'Survivor achievement at 5 deaths');
+
+  assertEqual(ACHIEVEMENTS.length >= 20, true, 'At least 20 achievements defined');
+
+  // --- Charm Rework ---
+  suite('Charm System (Reworked)');
+  createPlayer('TestHero', 'warrior');
+  state.dayCount = 1;
+
+  assert(canCharmToday('saara'), 'Can charm Saara on fresh day');
+  markCharmedToday('saara');
+  assert(!canCharmToday('saara'), 'Cannot charm Saara twice same day');
+
+  // Test mood
+  const mood = getNpcMood('saara');
+  assert(['happy', 'neutral', 'annoyed'].includes(mood), 'Mood is valid');
+
+  // Test charm gain by mood
+  assertEqual(getCharmGain(2, 'happy'), 3, 'Happy mood gives +1 bonus charm');
+  assertEqual(getCharmGain(2, 'neutral'), 2, 'Neutral mood gives base charm');
+  assertEqual(getCharmGain(2, 'annoyed'), 1, 'Annoyed mood reduces charm');
+  assertEqual(getCharmGain(1, 'annoyed'), 0, 'Annoyed mood can zero out low charm');
+
+  // Ongoing bonuses
+  state.player.charm.saara = 5;
+  const discount = getCharmBonus('shop_discount');
+  assertInRange(discount, 0.09, 0.11, 'Saara charm 5 gives ~10% shop discount');
+
+  state.player.charm.juhani = 10;
+  const xpBonus = getCharmBonus('xp_bonus');
+  assertInRange(xpBonus, 0.14, 0.16, 'Juhani charm 10 gives ~15% XP bonus');
+
+  state.player.charm.tapio = 8;
+  const hpRegen = getCharmBonus('hp_regen');
+  assertInRange(hpRegen, 3.9, 4.1, 'Tapio charm 8 gives ~4 HP regen');
+
+  // --- Rotating Shop ---
+  suite('Rotating Shop');
+  createPlayer('TestHero', 'warrior');
+  state.dayCount = 1;
+  const specials1 = getDailySpecials();
+  assert(specials1.length >= 2, 'At least 2 daily specials');
+  assert(specials1.some(s => s.isSpecial), 'Specials are marked as special');
+  assert(specials1.some(s => s.price > 0), 'Specials have prices');
+
+  // Different day = different specials
+  state.dayCount = 2;
+  const specials2 = getDailySpecials();
+  const same = specials1[0].name === specials2[0].name && specials1[1].name === specials2[1].name;
+  // Not guaranteed different every day but should differ sometimes
+  // Just check they return valid results
+  assert(specials2.length >= 2, 'Day 2 also has specials');
+
+  // --- Weather Flavor Text ---
+  suite('Weather Flavor Text');
+  state.weather = 'rain';
+  const rainText = getWeatherFlavorText();
+  assertTruthy(rainText, 'Rain flavor text exists');
+  assert(typeof rainText === 'string', 'Rain flavor is a string');
+
+  state.weather = 'snow';
+  assertTruthy(getWeatherFlavorText(), 'Snow flavor text exists');
+
+  state.weather = 'fog';
+  assertTruthy(getWeatherFlavorText(), 'Fog flavor text exists');
+
+  state.weather = 'clear';
+  assertEqual(getWeatherFlavorText(), '', 'Clear weather has no special text');
+
   // ===================== SUMMARY =====================
   showSummary();
   </script>
