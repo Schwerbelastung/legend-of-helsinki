@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Legend of Helsinki</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- ===== GAME CONTAINER ===== -->
+  <div id="gameContainer">
+
+    <!-- Canvas for pixel art scenes -->
+    <canvas id="gameCanvas" width="320" height="200"></canvas>
+
+    <!-- Status bar -->
+    <div id="statusBar">
+      <span id="statName">-</span>
+      <span id="statLevel">Lv.1</span>
+      <span id="statHp">HP: -/-</span>
+      <span id="statMp">MP: -/-</span>
+      <span id="statGold">Gold: 0</span>
+      <span id="statRegion">Helsinki</span>
+      <span id="audioToggles">
+        <button id="btnMusic" title="Toggle music">M</button>
+        <button id="btnSfx" title="Toggle SFX">S</button>
+      </span>
+    </div>
+
+    <!-- Text/narrative panel -->
+    <div id="textPanel">
+      <div id="textContent"></div>
+    </div>
+
+    <!-- Menu panel -->
+    <div id="menuPanel"></div>
+
+    <!-- Name input (hidden by default) -->
+    <div id="nameInputWrap" style="display:none">
+      <input type="text" id="nameInput" placeholder="Enter your name" maxlength="16" autocomplete="off">
+      <button id="nameSubmit">OK</button>
+    </div>
+
+  </div>
+
+  <script src="js/game.js"></script>
+</body>
+</html>
