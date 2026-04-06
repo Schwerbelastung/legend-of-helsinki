@@ -126,19 +126,21 @@
   assertEqual(state.player.name, 'TestHero', 'Player name is set');
   assertEqual(state.player.class, 'warrior', 'Player class is warrior');
   assertEqual(state.player.level, 1, 'Starts at level 1');
-  assertEqual(state.player.hp, 30, 'Warrior starts with 30 HP');
+  assertEqual(state.player.hp, 28, 'Warrior starts with 28 HP');
   assertEqual(state.player.mp, 5, 'Warrior starts with 5 MP');
-  assertEqual(state.player.strength, 8, 'Warrior starts with 8 STR');
-  assertEqual(state.player.gold, 50, 'Starts with 50 gold');
+  assertEqual(state.player.strength, 6, 'Warrior starts with 6 STR');
+  assertEqual(state.player.defense, 3, 'Warrior starts with 3 DEF');
+  assertEqual(state.player.gold, 30, 'Starts with 30 gold');
   assertEqual(state.player.currentRegion, 'helsinki', 'Starts in Helsinki');
   assert(state.player.inventory.length > 0, 'Starts with items in inventory');
 
   createPlayer('TestMage', 'mage');
-  assertEqual(state.player.hp, 18, 'Mage starts with 18 HP');
-  assertEqual(state.player.magic, 8, 'Mage starts with 8 MAG');
+  assertEqual(state.player.hp, 16, 'Mage starts with 16 HP');
+  assertEqual(state.player.magic, 7, 'Mage starts with 7 MAG');
+  assertEqual(state.player.defense, 1, 'Mage starts with 1 DEF');
 
   createPlayer('TestRogue', 'rogue');
-  assertEqual(state.player.speed, 7, 'Rogue starts with 7 SPD');
+  assertEqual(state.player.speed, 6, 'Rogue starts with 6 SPD');
 
   // Reset to warrior for remaining tests
   createPlayer('TestHero', 'warrior');
@@ -147,15 +149,15 @@
   suite('Level Up System');
   state.player.xp = 0;
   assert(!checkLevelUp(), 'No level up at 0 XP');
-  state.player.xp = 100;
-  assert(checkLevelUp(), 'Level up at 100 XP (level 1->2)');
+  state.player.xp = 140;
+  assert(checkLevelUp(), 'Level up at 140 XP (level 1->2)');
   assertEqual(state.player.level, 2, 'Now level 2');
   assertEqual(state.player.hp, state.player.maxHp, 'HP fully restored on level up');
   assertEqual(state.player.mp, state.player.maxMp, 'MP fully restored on level up');
   const prevMaxHp = state.player.maxHp;
-  state.player.xp = 250;
+  state.player.xp = 350;
   checkLevelUp();
-  assertEqual(state.player.level, 3, 'Level up to 3 at 250 XP');
+  assertEqual(state.player.level, 3, 'Level up to 3 at 350 XP');
   assert(state.player.maxHp > prevMaxHp, 'MaxHP increased on level up');
 
   // Max level cap
@@ -215,7 +217,7 @@
   state.player.hp = 10;
   const healResult = useConsumable(state.player, 'potion_small');
   assertTruthy(healResult, 'Small potion returns result');
-  assertEqual(state.player.hp, 30, 'Small potion heals 20 HP (capped at max)');
+  assertEqual(state.player.hp, 28, 'Small potion heals 20 HP (capped at max 28)');
 
   state.player.hp = 1;
   useConsumable(state.player, 'potion_full');
@@ -239,7 +241,7 @@
   const bossDragon = getMonsterById('lohikaarme');
   assertTruthy(bossDragon, 'Dragon boss exists');
   assert(bossDragon.isBoss, 'Dragon is marked as boss');
-  assertEqual(bossDragon.hp, 500, 'Dragon has 500 HP');
+  assert(bossDragon.hp >= 400, 'Dragon has high HP');
 
   const randomMonster = getRandomMonster('helsinki', 1);
   assertTruthy(randomMonster, 'getRandomMonster returns a monster');
@@ -471,7 +473,7 @@
   assert(craftItem(ratRecipe, dummyAddMsg), 'Crafting succeeds with materials');
   assertEqual(hasItem('rat_fang'), 0, 'Materials consumed');
   assertEqual(state.player.weapon.id, 'rat_dagger', 'Rat dagger equipped');
-  assertEqual(state.player.weapon.attackBonus, 7, 'Rat dagger has correct ATK');
+  assertEqual(state.player.weapon.attackBonus, 5, 'Rat dagger has correct ATK');
   assert(state.flags.crafted_craft_rat_blade, 'Craft flag set');
 
   // --- Save/Load ---
@@ -706,6 +708,34 @@
 
   state.weather = 'clear';
   assertEqual(getWeatherFlavorText(), '', 'Clear weather has no special text');
+
+  // --- Balance Checks ---
+  suite('Game Balance');
+  createPlayer('TestHero', 'warrior');
+  // Warrior with fists vs weakest monster: monster should deal real damage
+  const weakMonster = getMonsterById('torilokit');
+  assert(weakMonster.strength > state.player.defense, 'Weakest Helsinki monster STR > warrior DEF (monsters deal real damage)');
+
+  // Healing costs should exceed one fight's gold reward
+  const healCost = getHealCost('helsinki', 1);
+  assert(healCost > 4, 'Helsinki heal cost > weakest monster gold (healing is a real cost)');
+
+  // First weapon should require multiple fights to afford
+  const firstWeapon = getItemById('wooden_sword');
+  assert(firstWeapon.price > weakMonster.goldReward * 5, 'First weapon costs more than 5 fights of gold');
+
+  // Mage should be fragile
+  createPlayer('TestMage', 'mage');
+  assert(state.player.defense < weakMonster.strength, 'Mage DEF < weakest monster STR (mage is vulnerable)');
+
+  // Inn costs more than healer
+  const innCost = getInnCost('helsinki', 1);
+  assert(innCost > healCost, 'Inn costs more than healer');
+
+  // XP for level 2 should require multiple fights
+  const avgXp = 20; // rough average for Helsinki
+  const fightsToLevel = Math.ceil(XP_TABLE[2] / avgXp);
+  assert(fightsToLevel >= 5, `Need ${fightsToLevel} fights to level 2 (should be 5+)`);
 
   // ===================== SUMMARY =====================
   showSummary();

@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.8.1] - 2026-04-07
+
+### Changed
+- **Combat balance overhaul** — early game is no longer trivial
+  - All class base DEF reduced by 2-3 (warrior 6→3, mage 3→1, rogue 4→2)
+  - Warrior STR reduced (8→6), mage MAG (8→7)
+  - Stat growth per level reduced across all classes
+  - Helsinki monster STR increased by 2-3 across the board
+  - Helsinki monster HP increased slightly
+  - Gold rewards reduced 30-50% across all Helsinki monsters
+  - Starting gold reduced (50→30), starting potions (3→2)
+  - XP requirements increased ~40% (level 2: 100→140, level 3: 250→350, etc.)
+  - Weapon attack bonuses reduced across all tiers (e.g. Wooden Sword 3→2, Sampo Blade 60→50)
+  - Armor defense bonuses reduced across all tiers (e.g. Leather Vest 3→2, Tuoni's Shroud 50→40)
+  - Crafted gear stats reduced to match new curve
+  - Healing and inn costs increased (Helsinki heal 5→10, inn 15→25; scales up per region)
+- **Result**: Level 1 warrior with fists now takes ~4 damage per hit from the weakest monster (was 1). Kaljatrolli is a genuine threat without gear. Potions and healing are real economic decisions.
+- Added balance regression tests to test suite
+
 ## [0.8.0] - 2026-04-06
 
 ### Added

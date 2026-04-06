@@ -536,42 +536,42 @@ function getCanvas() { return canvas; }
 const WEAPONS = {
   // Helsinki tier (levels 1-3)
   fists:        { id: 'fists', name: 'Bare Fists', attackBonus: 0, price: 0, region: 'helsinki' },
-  wooden_sword: { id: 'wooden_sword', name: 'Wooden Sword', attackBonus: 3, price: 50, region: 'helsinki' },
-  bronze_axe:   { id: 'bronze_axe', name: 'Bronze Axe', attackBonus: 5, price: 120, region: 'helsinki' },
-  iron_mace:    { id: 'iron_mace', name: 'Iron Mace', attackBonus: 8, price: 250, region: 'helsinki' },
-  market_blade: { id: 'market_blade', name: 'Market Blade', attackBonus: 11, price: 400, region: 'helsinki' },
+  wooden_sword: { id: 'wooden_sword', name: 'Wooden Sword', attackBonus: 2, price: 40, region: 'helsinki' },
+  bronze_axe:   { id: 'bronze_axe', name: 'Bronze Axe', attackBonus: 4, price: 100, region: 'helsinki' },
+  iron_mace:    { id: 'iron_mace', name: 'Iron Mace', attackBonus: 6, price: 200, region: 'helsinki' },
+  market_blade: { id: 'market_blade', name: 'Market Blade', attackBonus: 8, price: 350, region: 'helsinki' },
 
   // Espoo tier (levels 4-6)
-  tech_blade:   { id: 'tech_blade', name: 'Techno Blade', attackBonus: 14, price: 600, region: 'espoo' },
-  forest_bow:   { id: 'forest_bow', name: 'Nuuksio Bow', attackBonus: 17, price: 900, region: 'espoo' },
-  hiisi_spear:  { id: 'hiisi_spear', name: 'Hiisi Spear', attackBonus: 21, price: 1400, region: 'espoo' },
+  tech_blade:   { id: 'tech_blade', name: 'Techno Blade', attackBonus: 11, price: 500, region: 'espoo' },
+  forest_bow:   { id: 'forest_bow', name: 'Nuuksio Bow', attackBonus: 14, price: 800, region: 'espoo' },
+  hiisi_spear:  { id: 'hiisi_spear', name: 'Hiisi Spear', attackBonus: 17, price: 1200, region: 'espoo' },
 
   // Vantaa tier (levels 7-9)
-  steel_katana: { id: 'steel_katana', name: 'Steel Katana', attackBonus: 26, price: 2000, region: 'vantaa' },
-  thunder_axe:  { id: 'thunder_axe', name: 'Thunder Axe', attackBonus: 31, price: 3000, region: 'vantaa' },
-  ghost_blade:  { id: 'ghost_blade', name: 'Ghost Blade', attackBonus: 37, price: 4500, region: 'vantaa' },
+  steel_katana: { id: 'steel_katana', name: 'Steel Katana', attackBonus: 21, price: 1800, region: 'vantaa' },
+  thunder_axe:  { id: 'thunder_axe', name: 'Thunder Axe', attackBonus: 25, price: 2800, region: 'vantaa' },
+  ghost_blade:  { id: 'ghost_blade', name: 'Ghost Blade', attackBonus: 30, price: 4000, region: 'vantaa' },
 
   // Kauniainen tier (levels 10-12)
-  ancient_sword:  { id: 'ancient_sword', name: 'Ancient Sword', attackBonus: 44, price: 6500, region: 'kauniainen' },
-  tuoni_scythe:   { id: 'tuoni_scythe', name: "Tuoni's Scythe", attackBonus: 52, price: 9000, region: 'kauniainen' },
-  sampo_blade:    { id: 'sampo_blade', name: 'Sampo Blade', attackBonus: 60, price: 0, region: 'kauniainen', quest: true },
+  ancient_sword:  { id: 'ancient_sword', name: 'Ancient Sword', attackBonus: 36, price: 5500, region: 'kauniainen' },
+  tuoni_scythe:   { id: 'tuoni_scythe', name: "Tuoni's Scythe", attackBonus: 42, price: 8000, region: 'kauniainen' },
+  sampo_blade:    { id: 'sampo_blade', name: 'Sampo Blade', attackBonus: 50, price: 0, region: 'kauniainen', quest: true },
 };
 
 const ARMORS = {
   clothes:      { id: 'clothes', name: 'Old Clothes', defenseBonus: 0, price: 0, region: 'helsinki' },
-  leather_vest: { id: 'leather_vest', name: 'Leather Vest', defenseBonus: 3, price: 40, region: 'helsinki' },
-  chain_mail:   { id: 'chain_mail', name: 'Chain Mail', defenseBonus: 6, price: 150, region: 'helsinki' },
-  iron_plate:   { id: 'iron_plate', name: 'Iron Plate', defenseBonus: 9, price: 350, region: 'helsinki' },
+  leather_vest: { id: 'leather_vest', name: 'Leather Vest', defenseBonus: 2, price: 35, region: 'helsinki' },
+  chain_mail:   { id: 'chain_mail', name: 'Chain Mail', defenseBonus: 4, price: 120, region: 'helsinki' },
+  iron_plate:   { id: 'iron_plate', name: 'Iron Plate', defenseBonus: 7, price: 280, region: 'helsinki' },
 
-  tech_suit:    { id: 'tech_suit', name: 'Tech Suit', defenseBonus: 13, price: 550, region: 'espoo' },
-  bark_armor:   { id: 'bark_armor', name: 'Bark Armor', defenseBonus: 17, price: 850, region: 'espoo' },
-  hiisi_hide:   { id: 'hiisi_hide', name: 'Hiisi Hide', defenseBonus: 22, price: 1300, region: 'espoo' },
+  tech_suit:    { id: 'tech_suit', name: 'Tech Suit', defenseBonus: 10, price: 450, region: 'espoo' },
+  bark_armor:   { id: 'bark_armor', name: 'Bark Armor', defenseBonus: 13, price: 750, region: 'espoo' },
+  hiisi_hide:   { id: 'hiisi_hide', name: 'Hiisi Hide', defenseBonus: 17, price: 1100, region: 'espoo' },
 
-  steel_plate:  { id: 'steel_plate', name: 'Steel Plate', defenseBonus: 28, price: 2200, region: 'vantaa' },
-  storm_cloak:  { id: 'storm_cloak', name: 'Storm Cloak', defenseBonus: 34, price: 3500, region: 'vantaa' },
+  steel_plate:  { id: 'steel_plate', name: 'Steel Plate', defenseBonus: 22, price: 1900, region: 'vantaa' },
+  storm_cloak:  { id: 'storm_cloak', name: 'Storm Cloak', defenseBonus: 27, price: 3000, region: 'vantaa' },
 
-  ancient_mail: { id: 'ancient_mail', name: 'Ancient Mail', defenseBonus: 42, price: 5500, region: 'kauniainen' },
-  tuoni_shroud: { id: 'tuoni_shroud', name: "Tuoni's Shroud", defenseBonus: 50, price: 8000, region: 'kauniainen' },
+  ancient_mail: { id: 'ancient_mail', name: 'Ancient Mail', defenseBonus: 34, price: 4800, region: 'kauniainen' },
+  tuoni_shroud: { id: 'tuoni_shroud', name: "Tuoni's Shroud", defenseBonus: 40, price: 7000, region: 'kauniainen' },
 };
 
 const ACCESSORIES = {
@@ -635,14 +635,14 @@ const CRAFT_RECIPES = [
 
 // Crafted items (not sold in shops)
 const CRAFTED_WEAPONS = {
-  rat_dagger:        { id: 'rat_dagger', name: 'Rat-Tooth Dagger', attackBonus: 7, price: 0 },
-  overclocked_blade: { id: 'overclocked_blade', name: 'Overclocked Blade', attackBonus: 19, price: 0 },
-  storm_axe:         { id: 'storm_axe', name: 'Thunderstrike Axe', attackBonus: 35, price: 0 },
+  rat_dagger:        { id: 'rat_dagger', name: 'Rat-Tooth Dagger', attackBonus: 5, price: 0 },
+  overclocked_blade: { id: 'overclocked_blade', name: 'Overclocked Blade', attackBonus: 15, price: 0 },
+  storm_axe:         { id: 'storm_axe', name: 'Thunderstrike Axe', attackBonus: 28, price: 0 },
 };
 const CRAFTED_ARMORS = {
-  troll_vest:     { id: 'troll_vest', name: 'Troll-Hide Vest', defenseBonus: 8, price: 0 },
-  drakefire_plate:{ id: 'drakefire_plate', name: 'Drakefire Plate', defenseBonus: 32, price: 0 },
-  aurora_cloak:   { id: 'aurora_cloak', name: 'Aurora Cloak', defenseBonus: 48, price: 0 },
+  troll_vest:     { id: 'troll_vest', name: 'Troll-Hide Vest', defenseBonus: 6, price: 0 },
+  drakefire_plate:{ id: 'drakefire_plate', name: 'Drakefire Plate', defenseBonus: 25, price: 0 },
+  aurora_cloak:   { id: 'aurora_cloak', name: 'Aurora Cloak', defenseBonus: 38, price: 0 },
 };
 const CRAFTED_ACCESSORIES = {
   spectral_band: { id: 'spectral_band', name: 'Spectral Band', effect: 'mpRegen', value: 4, desc: '+4 MP/turn', price: 0 },
@@ -706,8 +706,8 @@ const MONSTERS = {
   rautatie_rotta: {
     id: 'rautatie_rotta', name: 'Rautatie-Rotta', region: 'helsinki',
     levelRange: [1, 2],
-    hp: 15, strength: 5, defense: 2, speed: 6, magic: 0,
-    xpReward: 15, goldReward: 8,
+    hp: 18, strength: 7, defense: 2, speed: 6, magic: 0,
+    xpReward: 18, goldReward: 5,
     drops: [{ itemId: 'potion_small', chance: 0.2 }, { itemId: 'rat_fang', chance: 0.35 }],
     attacks: ['bite', 'scratch'],
     weaknesses: ['fire'], resistances: [],
@@ -721,8 +721,8 @@ const MONSTERS = {
   torilokit: {
     id: 'torilokit', name: 'Torilokit', region: 'helsinki',
     levelRange: [1, 2],
-    hp: 10, strength: 4, defense: 1, speed: 8, magic: 0,
-    xpReward: 12, goldReward: 5,
+    hp: 14, strength: 6, defense: 1, speed: 9, magic: 0,
+    xpReward: 15, goldReward: 4,
     drops: [{ itemId: 'potion_small', chance: 0.15 }],
     attacks: ['peck', 'divebomb'],
     weaknesses: [], resistances: [],
@@ -736,8 +736,8 @@ const MONSTERS = {
   kaljatrolli: {
     id: 'kaljatrolli', name: 'Kaljatrolli', region: 'helsinki',
     levelRange: [1, 3],
-    hp: 30, strength: 8, defense: 4, speed: 3, magic: 0,
-    xpReward: 25, goldReward: 15,
+    hp: 35, strength: 10, defense: 4, speed: 3, magic: 0,
+    xpReward: 30, goldReward: 10,
     drops: [{ itemId: 'potion_small', chance: 0.3 }, { itemId: 'troll_hide', chance: 0.3 }],
     attacks: ['punch', 'belch', 'throw_bottle'],
     weaknesses: [], resistances: ['poison'],
@@ -752,8 +752,8 @@ const MONSTERS = {
   haamuvartija: {
     id: 'haamuvartija', name: 'Haamuvartija', region: 'helsinki',
     levelRange: [2, 3],
-    hp: 22, strength: 7, defense: 3, speed: 5, magic: 4,
-    xpReward: 30, goldReward: 20,
+    hp: 26, strength: 9, defense: 3, speed: 5, magic: 6,
+    xpReward: 35, goldReward: 12,
     drops: [{ itemId: 'mana_small', chance: 0.2 }, { itemId: 'ghost_essence', chance: 0.3 }],
     attacks: ['slash', 'ghostly_wail'],
     weaknesses: ['fire', 'lightning'], resistances: ['physical', 'poison'],
@@ -767,8 +767,8 @@ const MONSTERS = {
   meritonttu: {
     id: 'meritonttu', name: 'Meritonttu', region: 'helsinki',
     levelRange: [2, 3],
-    hp: 18, strength: 5, defense: 2, speed: 7, magic: 6,
-    xpReward: 22, goldReward: 25,
+    hp: 22, strength: 7, defense: 2, speed: 7, magic: 8,
+    xpReward: 28, goldReward: 14,
     drops: [{ itemId: 'lucky_coin', chance: 0.05 }, { itemId: 'potion_small', chance: 0.2 }],
     attacks: ['splash', 'trickery'],
     weaknesses: ['lightning'], resistances: ['ice'],
@@ -1036,8 +1036,8 @@ const MONSTERS = {
   postikyyhky: {
     id: 'postikyyhky', name: 'Postikyyhky', region: 'helsinki',
     levelRange: [1, 2], timeOfDay: 'day',
-    hp: 12, strength: 3, defense: 1, speed: 9, magic: 0,
-    xpReward: 10, goldReward: 4,
+    hp: 12, strength: 5, defense: 1, speed: 10, magic: 0,
+    xpReward: 12, goldReward: 3,
     drops: [{ itemId: 'potion_small', chance: 0.1 }],
     attacks: ['peck', 'divebomb'],
     weaknesses: [], resistances: [],
@@ -1051,8 +1051,8 @@ const MONSTERS = {
   kahvizombi: {
     id: 'kahvizombi', name: 'Kahvizombi', region: 'helsinki',
     levelRange: [1, 3], timeOfDay: 'day',
-    hp: 20, strength: 6, defense: 3, speed: 2, magic: 0,
-    xpReward: 18, goldReward: 12,
+    hp: 24, strength: 8, defense: 3, speed: 2, magic: 0,
+    xpReward: 22, goldReward: 8,
     drops: [{ itemId: 'potion_small', chance: 0.2 }],
     attacks: ['slap', 'groan', 'spill'],
     weaknesses: ['fire'], resistances: ['dark'],
@@ -1069,8 +1069,8 @@ const MONSTERS = {
   yolohi: {
     id: 'yolohi', name: 'Yölöhi', region: 'helsinki',
     levelRange: [1, 3], timeOfDay: 'night',
-    hp: 25, strength: 7, defense: 2, speed: 7, magic: 3,
-    xpReward: 22, goldReward: 18,
+    hp: 28, strength: 9, defense: 2, speed: 7, magic: 4,
+    xpReward: 25, goldReward: 10,
     drops: [{ itemId: 'mana_small', chance: 0.2 }],
     attacks: ['shadow_scratch', 'howl'],
     weaknesses: ['fire'], resistances: ['dark'],
@@ -1084,8 +1084,8 @@ const MONSTERS = {
   kallio_vampyyri: {
     id: 'kallio_vampyyri', name: 'Kallio-Vampyyri', region: 'helsinki',
     levelRange: [2, 3], timeOfDay: 'night',
-    hp: 28, strength: 8, defense: 4, speed: 6, magic: 5,
-    xpReward: 28, goldReward: 22,
+    hp: 32, strength: 10, defense: 4, speed: 6, magic: 6,
+    xpReward: 32, goldReward: 14,
     drops: [{ itemId: 'potion_small', chance: 0.25 }],
     attacks: ['bite', 'mesmerize', 'bat_swarm'],
     weaknesses: ['fire'], resistances: ['dark', 'poison'],
@@ -1312,8 +1312,8 @@ const REGIONS = {
     levelRange: [1, 3],
     unlockLevel: 1,
     description: 'The ancient capital, where cobblestone streets hide dark tunnels and the harbor wind carries whispers of sea creatures.',
-    healCostBase: 5,
-    innCostBase: 15,
+    healCostBase: 10,
+    innCostBase: 25,
   },
   espoo: {
     id: 'espoo',
@@ -1322,8 +1322,8 @@ const REGIONS = {
     levelRange: [4, 6],
     unlockLevel: 4,
     description: 'Where modern technology meets ancient forest. The trees of Nuuksio hold secrets older than silicon.',
-    healCostBase: 15,
-    innCostBase: 40,
+    healCostBase: 25,
+    innCostBase: 60,
   },
   vantaa: {
     id: 'vantaa',
@@ -1332,8 +1332,8 @@ const REGIONS = {
     levelRange: [7, 9],
     unlockLevel: 7,
     description: 'The airport lies in ruins, a gateway between worlds. The Keravanjoki river runs dark with otherworldly currents.',
-    healCostBase: 30,
-    innCostBase: 80,
+    healCostBase: 45,
+    innCostBase: 110,
   },
   kauniainen: {
     id: 'kauniainen',
@@ -1342,8 +1342,8 @@ const REGIONS = {
     levelRange: [10, 12],
     unlockLevel: 10,
     description: 'A small city with ancient power. The stone arch marks the boundary between the mortal world and something older.',
-    healCostBase: 50,
-    innCostBase: 150,
+    healCostBase: 70,
+    innCostBase: 200,
   },
 };
 
@@ -1377,21 +1377,21 @@ const SAVE_KEY = 'legend_helsinki_save';
 
 // XP required per level (index = level, so index 0 unused)
 const XP_TABLE = [
-  0, 0, 100, 250, 500, 900, 1500, 2400, 3800, 5800, 8500, 12000, 17000
+  0, 0, 140, 350, 650, 1100, 1800, 2800, 4200, 6200, 9000, 13000, 18000
 ];
 
 // Stat growth per level by class: [hp, mp, str, def, mag, spd]
 const CLASS_GROWTH = {
-  warrior:  [12, 2, 4, 3, 1, 2],
-  mage:     [7, 6, 1, 2, 4, 2],
-  rogue:    [9, 3, 3, 2, 2, 4],
+  warrior:  [10, 2, 3, 2, 1, 1],
+  mage:     [6, 5, 1, 1, 3, 1],
+  rogue:    [7, 3, 2, 1, 2, 3],
 };
 
 // Base stats by class at level 1
 const CLASS_BASE = {
-  warrior:  { hp: 30, mp: 5,  str: 8, def: 6, mag: 2, spd: 4 },
-  mage:     { hp: 18, mp: 20, str: 3, def: 3, mag: 8, spd: 4 },
-  rogue:    { hp: 22, mp: 10, str: 5, def: 4, mag: 4, spd: 7 },
+  warrior:  { hp: 28, mp: 5,  str: 6, def: 3, mag: 2, spd: 3 },
+  mage:     { hp: 16, mp: 18, str: 2, def: 1, mag: 7, spd: 3 },
+  rogue:    { hp: 20, mp: 8,  str: 4, def: 2, mag: 3, spd: 6 },
 };
 
 // Spells unlocked at levels by class
@@ -1779,12 +1779,12 @@ function createPlayer(name, playerClass) {
     defense: base.def,
     magic: base.mag,
     speed: base.spd,
-    gold: 50,
+    gold: 30,
     weapon: { id: 'fists', name: 'Bare Fists', attackBonus: 0, price: 0 },
     armor: { id: 'clothes', name: 'Old Clothes', defenseBonus: 0, price: 0 },
     accessory: null,
     inventory: [
-      { id: 'potion_small', quantity: 3 },
+      { id: 'potion_small', quantity: 2 },
     ],
     currentRegion: 'helsinki',
     activeQuests: [],
