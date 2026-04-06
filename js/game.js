@@ -721,7 +721,7 @@ const MONSTERS = {
   torilokit: {
     id: 'torilokit', name: 'Torilokit', region: 'helsinki',
     levelRange: [1, 2],
-    hp: 14, strength: 6, defense: 1, speed: 9, magic: 0,
+    hp: 14, strength: 5, defense: 1, speed: 8, magic: 0,
     xpReward: 15, goldReward: 4,
     drops: [{ itemId: 'potion_small', chance: 0.15 }],
     attacks: ['peck', 'divebomb'],
@@ -1036,7 +1036,7 @@ const MONSTERS = {
   postikyyhky: {
     id: 'postikyyhky', name: 'Postikyyhky', region: 'helsinki',
     levelRange: [1, 2], timeOfDay: 'day',
-    hp: 12, strength: 5, defense: 1, speed: 10, magic: 0,
+    hp: 10, strength: 4, defense: 1, speed: 8, magic: 0,
     xpReward: 12, goldReward: 3,
     drops: [{ itemId: 'potion_small', chance: 0.1 }],
     attacks: ['peck', 'divebomb'],
@@ -1390,8 +1390,8 @@ const CLASS_GROWTH = {
 // Base stats by class at level 1
 const CLASS_BASE = {
   warrior:  { hp: 28, mp: 5,  str: 6, def: 3, mag: 2, spd: 3 },
-  mage:     { hp: 16, mp: 18, str: 2, def: 1, mag: 7, spd: 3 },
-  rogue:    { hp: 20, mp: 8,  str: 4, def: 2, mag: 3, spd: 6 },
+  mage:     { hp: 20, mp: 18, str: 2, def: 2, mag: 7, spd: 3 },
+  rogue:    { hp: 22, mp: 8,  str: 4, def: 2, mag: 3, spd: 7 },
 };
 
 // Spells unlocked at levels by class

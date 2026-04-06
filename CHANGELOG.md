@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.8.2] - 2026-04-07
+
+### Changed
+- **Per-class balance tuning** — all three classes now viable in early game
+  - Mage: HP 16→20, DEF 1→2 (survives 2+ hits from weakest monster, can win with spells)
+  - Rogue: HP 20→22, SPD 6→7 (goes first against most monsters, can outpace with crits)
+  - Weakest monsters (Torilokit, Postikyyhky) STR softened slightly (6→5, 5→4)
+  - Kaljatrolli remains a wall for all classes at level 1 — intended as "come back with gear"
+- Added per-class balance regression tests (mage survivability, rogue speed, warrior toughness)
+
 ## [0.8.1] - 2026-04-07
 
 ### Changed

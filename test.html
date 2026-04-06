@@ -135,12 +135,13 @@
   assert(state.player.inventory.length > 0, 'Starts with items in inventory');
 
   createPlayer('TestMage', 'mage');
-  assertEqual(state.player.hp, 16, 'Mage starts with 16 HP');
+  assertEqual(state.player.hp, 20, 'Mage starts with 20 HP');
   assertEqual(state.player.magic, 7, 'Mage starts with 7 MAG');
-  assertEqual(state.player.defense, 1, 'Mage starts with 1 DEF');
+  assertEqual(state.player.defense, 2, 'Mage starts with 2 DEF');
 
   createPlayer('TestRogue', 'rogue');
-  assertEqual(state.player.speed, 6, 'Rogue starts with 6 SPD');
+  assertEqual(state.player.speed, 7, 'Rogue starts with 7 SPD');
+  assertEqual(state.player.hp, 22, 'Rogue starts with 22 HP');
 
   // Reset to warrior for remaining tests
   createPlayer('TestHero', 'warrior');
@@ -217,7 +218,7 @@
   state.player.hp = 10;
   const healResult = useConsumable(state.player, 'potion_small');
   assertTruthy(healResult, 'Small potion returns result');
-  assertEqual(state.player.hp, 28, 'Small potion heals 20 HP (capped at max 28)');
+  assertEqual(state.player.hp, 28, 'Small potion heals 20 HP (10+20=30, capped at max 28)');
 
   state.player.hp = 1;
   useConsumable(state.player, 'potion_full');
@@ -724,9 +725,24 @@
   const firstWeapon = getItemById('wooden_sword');
   assert(firstWeapon.price > weakMonster.goldReward * 5, 'First weapon costs more than 5 fights of gold');
 
-  // Mage should be fragile
+  // Mage: fragile but can survive 2 hits from weakest monster
   createPlayer('TestMage', 'mage');
-  assert(state.player.defense < weakMonster.strength, 'Mage DEF < weakest monster STR (mage is vulnerable)');
+  const mageDmgTaken = weakMonster.strength - state.player.defense;
+  assert(mageDmgTaken > 0, 'Mage takes real damage from weakest monster');
+  assert(state.player.hp > mageDmgTaken * 2, 'Mage survives at least 2 hits from weakest monster');
+  assert(state.player.hp <= mageDmgTaken * 8, 'Mage dies within 8 hits (not trivial)');
+
+  // Rogue: survives longer than mage, speed advantage
+  createPlayer('TestRogue', 'rogue');
+  const rogueDmgTaken = weakMonster.strength - state.player.defense;
+  assert(rogueDmgTaken > 0, 'Rogue takes real damage from weakest monster');
+  assert(state.player.speed > weakMonster.speed - 2, 'Rogue speed competitive with weak monsters');
+  assert(state.player.hp > rogueDmgTaken * 3, 'Rogue survives at least 3 hits from weakest monster');
+
+  // Warrior: toughest but not invincible
+  createPlayer('TestHero', 'warrior');
+  const warriorDmgTaken = weakMonster.strength - state.player.defense;
+  assert(warriorDmgTaken >= 2, 'Warrior takes 2+ damage from weakest monster');
 
   // Inn costs more than healer
   const innCost = getInnCost('helsinki', 1);
