@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.9.0] - 2026-04-07
+
+### Added
+- **18 new forest events** (total: 31 events, up from 13)
+  - Helsinki: Ghost Busker (music/healing), Lost Tourist (comedy), Sleeping Troll (risk/reward)
+  - Espoo: Abandoned Laptop (code reading), White Deer Spirit (healing/knowledge), Geocache (exploration humor)
+  - Vantaa: Phantom PA Announcement (airport horror), Luggage Carousel (mystery loot), Ghost Customs Officer (bureaucratic comedy)
+  - Kauniainen: Singing Stones (harmonic magic), Time Loop (puzzle), Spirit Merchant (absurdist commerce)
+  - Multi-region: Vending Machine in the Forest (gambling), Night Campfire (rest/Mielikki encounter)
+  - Night-only: Aurora Vision (prophecy/knowledge)
+  - Weather-specific: Rain Puddle (reflection portal), Snow Sculpture (doppelganger), Fog Strangers (alternate selves)
+- Events now better distributed across all regions and times of day
+
+### Changed
+- Updated LICENSE copyright holder
+
 ## [0.8.2] - 2026-04-07
 
 ### Changed

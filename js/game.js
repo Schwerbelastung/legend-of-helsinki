@@ -3129,6 +3129,390 @@ const EVENTS = [
       }
     ]
   },
+
+  // ===== HELSINKI ADDITIONAL EVENTS =====
+  {
+    id: 'busker_ghost',
+    regions: ['helsinki'],
+    minLevel: 1,
+    art: 'drawEventGeneric',
+    text: 'A translucent accordion player sits on a bench, performing for an audience of pigeons. The music is hauntingly beautiful.',
+    choices: [
+      { text: 'Drop a coin in his hat', outcomes: [
+        { weight: 0.6, text: 'He nods gratefully. The music swells and you feel... lighter. Faster.', effect: { gold: -3, tempSpd: 2, xp: 10 } },
+        { weight: 0.4, text: 'The coin passes through the hat and the ground. He shrugs. "Happens all the time."', effect: { gold: -3 } },
+      ]},
+      { text: 'Request a song', outcomes: [
+        { weight: 0.5, text: 'He plays "Finlandia." Tears stream down your face. You feel renewed.', effect: { hp: 999, mp: 999 } },
+        { weight: 0.5, text: 'He plays something atonal. The pigeons flee. You feel confused but oddly energized.', effect: { xp: 15 } },
+      ]},
+      { text: 'Walk past', outcomes: [
+        { weight: 1.0, text: 'The music follows you for a while, then fades like a memory.', effect: {} },
+      ]}
+    ]
+  },
+  {
+    id: 'lost_tourist',
+    regions: ['helsinki'],
+    minLevel: 1,
+    art: 'drawEventGeneric',
+    text: 'A confused tourist holds a map upside down. "Excuse me, is this the way to the Sibelius Monument?" They are deep in a monster-infested forest.',
+    choices: [
+      { text: 'Help them find their way', outcomes: [
+        { weight: 0.7, text: '"Oh thank you! Here, take this — I have too many souvenirs anyway." They hand you a small trinket and wander off.', effect: { gold: 20, xp: 10 } },
+        { weight: 0.3, text: 'You escort them to the forest edge. They give you a hearty handshake. You notice your wallet feels lighter.', effect: { gold: -5, xp: 15 } },
+      ]},
+      { text: '"Run. Now."', outcomes: [
+        { weight: 0.5, text: 'They stare at you, then hear a growl in the bushes. They run faster than you thought possible.', effect: {} },
+        { weight: 0.5, text: '"What? Why?" A seagull the size of a dog lands behind them. They scream. You both run.', effect: { xp: 5 } },
+      ]},
+      { text: 'Ignore them', outcomes: [
+        { weight: 1.0, text: 'You pretend not to speak any recognizable language. They wander off, still holding the map upside down.', effect: {} },
+      ]}
+    ]
+  },
+  {
+    id: 'vending_machine',
+    regions: ['helsinki', 'espoo', 'vantaa'],
+    minLevel: 1,
+    art: 'drawEventGeneric',
+    text: 'An old vending machine stands in the middle of the forest, humming with power. No cord. No outlet. The display reads: "INSERT COIN."',
+    choices: [
+      { text: 'Insert 10 gold', outcomes: [
+        { weight: 0.4, text: 'A potion drops out. The machine says "KIITOS." You did not know machines could say that.', effect: { gold: -10, item: 'potion_medium' } },
+        { weight: 0.3, text: 'A loud clunk. Nothing comes out. The display reads: "BETTER LUCK NEXT TIME :)"', effect: { gold: -10 } },
+        { weight: 0.3, text: 'Your 10 gold comes back as 30. The machine winks at you. Machines should not wink.', effect: { gold: 20 } },
+      ]},
+      { text: 'Shake the machine', outcomes: [
+        { weight: 0.5, text: 'A potion falls out. Also a small angry creature, which flees. Free potion!', effect: { item: 'potion_small' } },
+        { weight: 0.3, text: 'The machine tilts and nearly crushes you. You dodge. The display reads: "RUDE."', effect: { hp: -10 } },
+        { weight: 0.2, text: 'The machine topples over, revealing a cache of coins underneath.', effect: { gold: 40 } },
+      ]},
+      { text: 'Leave it alone', outcomes: [
+        { weight: 1.0, text: 'Some things are best left unexplained. You walk away. The machine watches you go.', effect: {} },
+      ]}
+    ]
+  },
+  {
+    id: 'sleeping_troll',
+    regions: ['helsinki', 'espoo'],
+    minLevel: 2,
+    art: 'drawEventGeneric',
+    text: 'A massive troll is fast asleep against a tree, snoring like a chainsaw. A sack of gold sits beside it.',
+    choices: [
+      { text: 'Steal the gold sack', outcomes: [
+        { weight: 0.4, text: 'You are the stealthiest thief in Helsinki. You grab the sack and run. 50 gold!', effect: { gold: 50 } },
+        { weight: 0.4, text: 'You grab the sack — and it\'s tied to the troll\'s wrist. It wakes up.', effect: { gold: 15, hp: -15 } },
+        { weight: 0.2, text: 'The sack is full of rocks. The troll opens one eye and grins. "Works every time."', effect: { hp: -8 } },
+      ]},
+      { text: 'Search around the troll quietly', outcomes: [
+        { weight: 0.6, text: 'You find some coins it dropped while sleeping. 15 gold.', effect: { gold: 15 } },
+        { weight: 0.4, text: 'You find nothing except an empty beer can and overwhelming smell.', effect: {} },
+      ]},
+      { text: 'Leave quietly', outcomes: [
+        { weight: 1.0, text: 'Wisdom. The troll continues snoring. You continue living.', effect: {} },
+      ]}
+    ]
+  },
+
+  // ===== ESPOO ADDITIONAL EVENTS =====
+  {
+    id: 'abandoned_laptop',
+    regions: ['espoo'],
+    minLevel: 4,
+    art: 'drawEventGeneric',
+    text: 'An open laptop sits on a stump, still powered on. The screen shows lines of code scrolling endlessly. The code is... moving.',
+    choices: [
+      { text: 'Read the code', outcomes: [
+        { weight: 0.5, text: 'The patterns make sudden sense. You understand something fundamental about the digital creatures here.', effect: { xp: 40, flag: 'read_the_code' } },
+        { weight: 0.3, text: 'The code reads YOU. You feel exposed, as if something learned your weaknesses.', effect: { hp: -10, xp: 20 } },
+        { weight: 0.2, text: 'Segmentation fault. The laptop explodes. You are fine. The stump is not.', effect: { xp: 10 } },
+      ]},
+      { text: 'Close the laptop', outcomes: [
+        { weight: 0.7, text: 'The screen goes dark. Was that a face in the reflection? No. Definitely not.', effect: {} },
+        { weight: 0.3, text: 'It won\'t close. The hinges resist. The screen displays: "DON\'T LEAVE ME HERE." You leave it there.', effect: {} },
+      ]},
+      { text: 'Take the laptop', outcomes: [
+        { weight: 0.5, text: 'You pick it up. It\'s warm. Too warm. You sell it for parts.', effect: { gold: 30 } },
+        { weight: 0.5, text: 'The laptop shocks you when you touch it. It was a trap. A digital trap in a forest. Of course.', effect: { hp: -15 } },
+      ]}
+    ]
+  },
+  {
+    id: 'deer_spirit',
+    regions: ['espoo', 'kauniainen'],
+    minLevel: 4,
+    art: 'drawEventGeneric',
+    text: 'A white deer stands in a shaft of light, watching you with ancient eyes. Its antlers shimmer like silver. This is no ordinary animal.',
+    choices: [
+      { text: 'Bow respectfully', outcomes: [
+        { weight: 0.7, text: 'The deer dips its head in return. A warm light passes through you. Your wounds close.', effect: { hp: 999, mp: 999 } },
+        { weight: 0.3, text: 'The deer regards you, then vanishes. Where it stood, a cluster of herbs grows. You gather them.', effect: { item: 'potion_medium' } },
+      ]},
+      { text: 'Follow it', outcomes: [
+        { weight: 0.5, text: 'It leads you through a hidden grove rich with berries and herbs. You feel nourished.', effect: { hp: 30, xp: 25 } },
+        { weight: 0.5, text: 'It leads you in a circle. You end up exactly where you started, two hours later. It seems amused.', effect: { advanceDay: false } },
+      ]},
+      { text: 'Approach slowly', outcomes: [
+        { weight: 0.6, text: 'It lets you touch its flank. The silver fur is warm. Knowledge floods into you — old knowledge.', effect: { xp: 50 } },
+        { weight: 0.4, text: 'It vanishes before you reach it, leaving only a faint scent of pine and starlight.', effect: { xp: 10 } },
+      ]}
+    ]
+  },
+  {
+    id: 'geocache',
+    regions: ['espoo'],
+    minLevel: 4,
+    art: 'drawEventGeneric',
+    text: 'You find a small waterproof box hidden under a rock. Inside: a logbook and a few trinkets. A geocache, left by someone braver than most.',
+    choices: [
+      { text: 'Take a trinket, leave a trinket', outcomes: [
+        { weight: 0.6, text: 'You take a small charm and leave a coin. Fair trade. The charm tingles with latent magic.', effect: { gold: -1, xp: 20 } },
+        { weight: 0.4, text: 'The only trinket left is a tiny rubber duck. You take it. It squeaks. Morale: improved.', effect: { xp: 5 } },
+      ]},
+      { text: 'Sign the logbook', outcomes: [
+        { weight: 1.0, text: 'You add your name. Previous entries: "Aino was here", "Louhi - this was too easy", "HELP". Encouraging.', effect: { xp: 10 } },
+      ]},
+      { text: 'Leave it for the next explorer', outcomes: [
+        { weight: 1.0, text: 'You carefully replace the box. Adventure is about the journey, not the loot. (Though loot helps.)', effect: {} },
+      ]}
+    ]
+  },
+
+  // ===== VANTAA ADDITIONAL EVENTS =====
+  {
+    id: 'phantom_announcement',
+    regions: ['vantaa'],
+    minLevel: 7,
+    art: 'drawEventGeneric',
+    text: 'A PA system crackles to life from a rusted speaker: "Attention passengers. Flight 13 to Tuonela is now boarding at Gate... everywhere. Gate everywhere."',
+    choices: [
+      { text: 'Follow the signs to Gate Everywhere', outcomes: [
+        { weight: 0.5, text: 'You find a shimmering portal. You don\'t enter, but the portal gives you something anyway. XP. Portals are weird.', effect: { xp: 40 } },
+        { weight: 0.5, text: 'You walk in circles until the announcement stops. You feel dizzy but strangely enriched.', effect: { xp: 20, hp: -10 } },
+      ]},
+      { text: 'Shout "I\'m not a passenger!"', outcomes: [
+        { weight: 0.6, text: 'The PA system goes silent. Then, quietly: "...you will be." Nothing happens after that. Probably.', effect: {} },
+        { weight: 0.4, text: '"Correction: Flight 13 has been cancelled due to... passenger resistance." You feel you won something.', effect: { xp: 30 } },
+      ]},
+      { text: 'Cover your ears', outcomes: [
+        { weight: 1.0, text: 'The announcement ends. You uncover your ears. The silence is somehow worse.', effect: {} },
+      ]}
+    ]
+  },
+  {
+    id: 'luggage_carousel',
+    regions: ['vantaa'],
+    minLevel: 7,
+    art: 'drawEventGeneric',
+    text: 'In the ruins of the terminal, a baggage carousel still turns. Suitcases circle endlessly. One has your name on it. You have never been to this airport.',
+    choices: [
+      { text: 'Take the suitcase', outcomes: [
+        { weight: 0.4, text: 'Inside: gold coins and a note reading "You\'ll need these where you\'re going." Ominous but profitable.', effect: { gold: 60 } },
+        { weight: 0.3, text: 'Inside: old clothes and a half-eaten sandwich. Someone else\'s memories. You feel melancholy.', effect: { hp: -5, xp: 15 } },
+        { weight: 0.3, text: 'Inside: a very angry creature. It bites you and escapes. The suitcase is otherwise empty.', effect: { hp: -20 } },
+      ]},
+      { text: 'Check other suitcases', outcomes: [
+        { weight: 0.5, text: 'Most are empty. One contains a perfectly preserved potion. Airports are strange.', effect: { item: 'potion_large' } },
+        { weight: 0.5, text: 'They\'re all empty. All except the one with your name. You didn\'t open that one.', effect: {} },
+      ]},
+      { text: 'Leave — this is wrong', outcomes: [
+        { weight: 1.0, text: 'You back away. The carousel stops. Then starts again. It will always be turning.', effect: {} },
+      ]}
+    ]
+  },
+  {
+    id: 'border_control_ghost',
+    regions: ['vantaa'],
+    minLevel: 7,
+    art: 'drawEventGeneric',
+    text: 'A spectral customs officer materializes. "Passport, please." You do not have a passport. You are in a forest. This is unreasonable.',
+    choices: [
+      { text: 'Argue politely', outcomes: [
+        { weight: 0.5, text: '"Hmm. Irregular, but your aura checks out. Proceed." The ghost stamps the air and vanishes. You gain... experience?', effect: { xp: 35 } },
+        { weight: 0.5, text: '"No passport, no passage." An invisible barrier blocks your path. Then it disappears. Ghosts have short attention spans.', effect: {} },
+      ]},
+      { text: 'Run through the checkpoint', outcomes: [
+        { weight: 0.4, text: 'You dash through! An alarm sounds, then stops. No one comes. Bureaucracy is slow even in death.', effect: { xp: 20 } },
+        { weight: 0.6, text: 'The ghost stamps "REJECTED" on your forehead. It stings. Metaphysically.', effect: { hp: -15 } },
+      ]},
+      { text: 'Offer a bribe', outcomes: [
+        { weight: 0.5, text: '"I don\'t take bribes." Pause. "...how much?" You pay 20 gold. The ghost waves you through cheerfully.', effect: { gold: -20, xp: 25 } },
+        { weight: 0.5, text: '"How dare you! I am an officer of the AFTERLIFE!" The ghost is offended but also takes the money.', effect: { gold: -20 } },
+      ]}
+    ]
+  },
+
+  // ===== KAUNIAINEN ADDITIONAL EVENTS =====
+  {
+    id: 'singing_stones',
+    regions: ['kauniainen'],
+    minLevel: 10,
+    art: 'drawEventGeneric',
+    text: 'Seven stones arranged in a circle begin to hum as you approach. The sound is a chord — beautiful and terrifying. The ground vibrates.',
+    choices: [
+      { text: 'Add your voice to the chord', outcomes: [
+        { weight: 0.5, text: 'The harmony completes. Light erupts from the stones. You are healed, body and soul.', effect: { hp: 999, mp: 999, xp: 50 } },
+        { weight: 0.3, text: 'Your voice cracks. The stones seem disappointed. The humming stops.', effect: { xp: 10 } },
+        { weight: 0.2, text: 'The chord shifts to something dark. Power floods into you — but at a cost.', effect: { mp: 999, hp: -20, xp: 60 } },
+      ]},
+      { text: 'Touch the central stone', outcomes: [
+        { weight: 0.5, text: 'Visions of the past: the Sampo being forged, then shattered. You understand more now.', effect: { xp: 40 } },
+        { weight: 0.5, text: 'The stone is impossibly cold. Your hand sticks to it briefly. Frostbite. Worth it for the runes you saw.', effect: { hp: -10, xp: 30 } },
+      ]},
+      { text: 'Listen from a distance', outcomes: [
+        { weight: 1.0, text: 'The stones sing for several minutes, then fall silent. You feel you missed something. But you are alive and intact.', effect: { xp: 15 } },
+      ]}
+    ]
+  },
+  {
+    id: 'time_loop',
+    regions: ['kauniainen'],
+    minLevel: 10,
+    art: 'drawEventGeneric',
+    text: 'You step into a clearing and feel dizzy. The trees look familiar. Too familiar. You have been here before. Just now. You are here again.',
+    choices: [
+      { text: 'Break the loop — go left', outcomes: [
+        { weight: 0.5, text: 'The loop shatters like glass. You stumble out, gasping. Time snaps back to normal. Your pockets are heavier somehow.', effect: { gold: 40, xp: 30 } },
+        { weight: 0.5, text: 'Left doesn\'t break it. You loop three more times before stumbling out, exhausted.', effect: { hp: -15, xp: 20 } },
+      ]},
+      { text: 'Break the loop — go right', outcomes: [
+        { weight: 0.5, text: 'You emerge somewhere new. Something ancient left a gift at the exit.', effect: { item: 'potion_full', xp: 30 } },
+        { weight: 0.5, text: 'Right leads deeper into the loop. You age slightly. Or maybe you just feel older.', effect: { hp: -10, xp: 25 } },
+      ]},
+      { text: 'Sit down and wait', outcomes: [
+        { weight: 0.6, text: 'The loop runs around you. Hours pass in seconds. When it stops, you are rested and the world is stable.', effect: { hp: 999, mp: 999 } },
+        { weight: 0.4, text: 'You wait so long you fall asleep. You wake up outside the loop with a stiff neck and vague memories.', effect: { hp: 999 } },
+      ]}
+    ]
+  },
+  {
+    id: 'spirit_merchant',
+    regions: ['kauniainen'],
+    minLevel: 10,
+    art: 'drawEventGeneric',
+    text: 'A translucent figure hovers above the ground, surrounded by floating objects. "I sell things that don\'t exist yet," it says. "Interested?"',
+    choices: [
+      { text: '"Show me what you have" (50g)', outcomes: [
+        { weight: 0.4, text: 'The spirit hands you a bottle of pure starlight. It heals everything. "No refunds."', effect: { gold: -50, item: 'potion_full' } },
+        { weight: 0.3, text: 'A scroll of forgotten knowledge. You absorb it instantly.', effect: { gold: -50, xp: 80 } },
+        { weight: 0.3, text: '"Here. This is the concept of Tuesday, crystallized." It\'s... a rock. A very expensive rock.', effect: { gold: -50, xp: 10 } },
+      ]},
+      { text: '"I don\'t trust ghost merchants"', outcomes: [
+        { weight: 0.6, text: '"Smart. Most of my inventory is cursed anyway." The spirit dissolves, cackling.', effect: {} },
+        { weight: 0.4, text: '"Fine! Take a free sample." The spirit throws something at you. It\'s helpful. Somehow.', effect: { item: 'mana_large' } },
+      ]},
+      { text: '"What\'s the meaning of all this?"', outcomes: [
+        { weight: 0.5, text: '"There is no meaning. There\'s just commerce." The spirit hands you its business card. It\'s blank.', effect: { xp: 20 } },
+        { weight: 0.5, text: '"The meaning is that you should buy things from me." Honest, at least.', effect: {} },
+      ]}
+    ]
+  },
+
+  // ===== NIGHT-SPECIFIC EVENTS =====
+  {
+    id: 'night_campfire',
+    regions: ['helsinki', 'espoo', 'vantaa', 'kauniainen'],
+    minLevel: 1,
+    condition: () => isNight(),
+    art: 'drawEventGeneric',
+    text: 'A small campfire burns unattended in a clearing. The flames are warm and inviting. There is no one around. There are two seats.',
+    choices: [
+      { text: 'Sit and rest', outcomes: [
+        { weight: 0.6, text: 'The fire warms you to your bones. Your HP restores slowly. When you look up, the fire is gone. Was it ever there?', effect: { hp: 999 } },
+        { weight: 0.4, text: 'You sit. A shape appears across the fire — Mielikki. She smiles, says nothing, and fades. You feel protected.', effect: { hp: 999, mp: 999, flag: 'campfire_mielikki' } },
+      ]},
+      { text: 'Warm your hands but stay alert', outcomes: [
+        { weight: 0.7, text: 'The warmth is enough. You move on feeling better.', effect: { hp: 20 } },
+        { weight: 0.3, text: 'While warming your hands, you spot something glinting in the embers. A coin? Several coins.', effect: { hp: 15, gold: 15 } },
+      ]},
+      { text: 'This is suspicious — leave', outcomes: [
+        { weight: 1.0, text: 'You leave. Behind you, the fire winks out. Good instincts, or missed opportunity?', effect: {} },
+      ]}
+    ]
+  },
+  {
+    id: 'aurora_vision',
+    regions: ['kauniainen', 'espoo'],
+    minLevel: 5,
+    condition: () => isNight(),
+    art: 'drawEventGeneric',
+    text: 'The aurora borealis descends low — impossibly low — and forms shapes. Faces. Words. A message meant only for you.',
+    choices: [
+      { text: 'Read the message', outcomes: [
+        { weight: 0.5, text: 'It reads: "THE DRAGON DREAMS OF YOU." Knowledge and dread fill you in equal measure.', effect: { xp: 50, flag: 'aurora_warning' } },
+        { weight: 0.3, text: 'It reads: "THREE STEPS NORTH, DIG." You find nothing there. But the search taught you something.', effect: { xp: 25 } },
+        { weight: 0.2, text: 'The lights form a map. You memorize it. Some of the paths glow brighter than others.', effect: { xp: 40 } },
+      ]},
+      { text: 'Reach toward the light', outcomes: [
+        { weight: 0.5, text: 'The aurora touches your fingertips. Warmth and knowledge flow through you.', effect: { hp: 30, mp: 30, xp: 30 } },
+        { weight: 0.5, text: 'The lights recoil from your touch. "NOT YET," they pulse. "NOT YET."', effect: { xp: 15 } },
+      ]},
+    ]
+  },
+
+  // ===== WEATHER-SPECIFIC EVENTS =====
+  {
+    id: 'rain_puddle',
+    regions: ['helsinki', 'espoo', 'vantaa', 'kauniainen'],
+    minLevel: 1,
+    condition: () => getWeather() === 'rain',
+    art: 'drawEventGeneric',
+    text: 'A puddle in the path reflects something that isn\'t there — a different sky, a different forest. The reflection ripples as if something swims beneath.',
+    choices: [
+      { text: 'Reach into the puddle', outcomes: [
+        { weight: 0.4, text: 'Your hand closes on something cold and metal. You pull out a handful of coins from... wherever that was.', effect: { gold: 25 } },
+        { weight: 0.3, text: 'Something grabs your hand. You yank it back. No damage, but your fingers tingle for hours.', effect: { mp: 15 } },
+        { weight: 0.3, text: 'The puddle is just a puddle. You are now wet. This is Finland; you were already wet.', effect: {} },
+      ]},
+      { text: 'Study the reflection', outcomes: [
+        { weight: 0.6, text: 'The other-sky shows constellations you don\'t recognize. Studying them teaches you something about magic.', effect: { xp: 20 } },
+        { weight: 0.4, text: 'Your reflection winks at you. You did not wink. You leave quickly.', effect: {} },
+      ]},
+    ]
+  },
+  {
+    id: 'snow_sculpture',
+    regions: ['helsinki', 'espoo', 'vantaa', 'kauniainen'],
+    minLevel: 1,
+    condition: () => getWeather() === 'snow',
+    art: 'drawEventGeneric',
+    text: 'Someone — or something — has built a snow sculpture of you. Perfect likeness. It was not here five minutes ago. There are no footprints.',
+    choices: [
+      { text: 'Destroy the sculpture', outcomes: [
+        { weight: 0.5, text: 'It crumbles. Inside: a small gem worth 30 gold. The sculptor won\'t mind. Probably.', effect: { gold: 30 } },
+        { weight: 0.5, text: 'As it falls, you feel a twinge of pain. Sympathetic magic? You feel slightly weakened.', effect: { hp: -8, gold: 30 } },
+      ]},
+      { text: 'Improve the sculpture', outcomes: [
+        { weight: 0.6, text: 'You add a heroic pose. The sculpture seems to approve. You feel more heroic yourself.', effect: { xp: 15 } },
+        { weight: 0.4, text: 'You try to improve it but your artistic skills are... limited. It now looks like a potato. You feel humble.', effect: { xp: 5 } },
+      ]},
+      { text: 'Leave it alone — don\'t provoke the sculptor', outcomes: [
+        { weight: 1.0, text: 'Wisdom. You walk away. Behind you, the sculpture slowly turns its head to watch. You don\'t see this.', effect: {} },
+      ]}
+    ]
+  },
+  {
+    id: 'fog_stranger',
+    regions: ['helsinki', 'espoo', 'vantaa', 'kauniainen'],
+    minLevel: 3,
+    condition: () => getWeather() === 'fog',
+    art: 'drawEventGeneric',
+    text: 'A figure appears in the fog. Then another. Then six more. They stand perfectly still. As the fog shifts, you realize — they are all you.',
+    choices: [
+      { text: 'Address them', outcomes: [
+        { weight: 0.5, text: 'They speak in unison: "We are the paths not taken." One steps forward and gives you a potion. "You\'ll need this."', effect: { item: 'potion_large' } },
+        { weight: 0.5, text: 'They all speak different things at once. The noise is unbearable. When it stops, you feel strangely resolved.', effect: { xp: 30, hp: -10 } },
+      ]},
+      { text: 'Walk through them', outcomes: [
+        { weight: 0.6, text: 'Each one you pass through whispers a secret. You emerge knowing more about yourself and this land.', effect: { xp: 40 } },
+        { weight: 0.4, text: 'They scatter like startled birds. The fog clears briefly. In the distance, you see something valuable.', effect: { gold: 35 } },
+      ]},
+      { text: 'Close your eyes until they leave', outcomes: [
+        { weight: 1.0, text: 'When you open your eyes, the fog has lifted and they are gone. Only footprints remain — eight sets, all yours.', effect: {} },
+      ]}
+    ]
+  },
 ];
 
 // Flavor text when nothing happens in the forest
