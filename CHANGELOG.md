@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.10.0] - 2026-04-07
+
+### Added
+- **13 new monsters** (total: 45 regular + 2 boss forms), filling all time-of-day gaps
+  - Helsinki (3): Metromoijanen (metro ghost), Puistokissa (giant night cat), Grillikioski-Mimic (sentient grill kiosk)
+  - Espoo (3): Nuuksio-Pöllö (giant night owl), Datakeskus-Henki (dead server room spirit), Sienimetsästäjä (mushroom forager zombie)
+  - Vantaa (3): Lentokenttävartija (ghost security guard, night), Jäteauto (possessed garbage truck, day), Vesihiisi (river water demon)
+  - Kauniainen (4): Haltija (nature guardian spirit, day), Muinaissusi (primordial wolf, day), Riekkohenki (giant ptarmigan spirit), Kiviukko (walking stone cairn, night)
+- All time-of-day coverage gaps now filled:
+  - Espoo night (5-6): Nuuksio-Pöllö
+  - Vantaa night (7-8): Lentokenttävartija
+  - Kauniainen day (10-11): Haltija
+  - Kauniainen day (11-12): Muinaissusi
+- Pixel art portraits for all 13 new monsters
+- Humorous bestiary researcher's notes for all new monsters
+- New crafting material drops on several new monsters
+
 ## [0.9.0] - 2026-04-07
 
 ### Added

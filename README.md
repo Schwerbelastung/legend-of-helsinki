@@ -13,7 +13,7 @@ Open `index.html` in any modern browser. No build step, no server, no dependenci
 - **4 regions** to explore: Helsinki, Espoo, Vantaa, and Kauniainen, each with unique monsters, NPCs, shops, and pixel art
 - **Turn-based combat** with stance system (Aggressive / Defensive / Magic)
 - **12 character levels** across 3 classes: Warrior, Mage, Rogue
-- **45 unique monsters** including day/night variants and a two-phase dragon boss fight
+- **45 unique monsters** (+2 boss forms) including day/night variants across all regions
 - **Monster bestiary** with pixel art portraits, stats, and humorous researcher's notes
 - **Grid map exploration** with fog of war, 32 landmarks, and WASD/arrow key movement
 - **Day/night cycle** that affects which monsters appear, forest atmosphere, and visual tinting

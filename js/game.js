@@ -1236,6 +1236,223 @@ const MONSTERS = {
     }
   },
 
+  // ===== WAVE 2 — FILLING GAPS + MORE VARIETY =====
+
+  // --- Helsinki: 3 new (variety at levels 1-3) ---
+  metromoijanen: {
+    id: 'metromoijanen', name: 'Metromoijanen', region: 'helsinki',
+    levelRange: [1, 2],
+    hp: 16, strength: 6, defense: 2, speed: 5, magic: 3,
+    xpReward: 16, goldReward: 6,
+    drops: [{ itemId: 'potion_small', chance: 0.15 }, { itemId: 'ghost_essence', chance: 0.15 }],
+    attacks: ['wail', 'cold_touch'],
+    weaknesses: ['fire'], resistances: ['physical'],
+    art: 'drawMetromoijanen',
+    desc: 'A moaning spirit that haunts the metro escalators. It moves slowly but its touch is numbingly cold.',
+    attackMessages: {
+      wail: 'The Metromoijanen wails! The sound echoes through your bones!',
+      cold_touch: 'An icy hand passes through your chest!',
+    }
+  },
+  puistokissa: {
+    id: 'puistokissa', name: 'Puistokissa', region: 'helsinki',
+    levelRange: [2, 3], timeOfDay: 'night',
+    hp: 20, strength: 8, defense: 1, speed: 10, magic: 2,
+    xpReward: 20, goldReward: 8,
+    drops: [{ itemId: 'potion_small', chance: 0.2 }],
+    attacks: ['pounce', 'hiss', 'scratch'],
+    weaknesses: [], resistances: ['dark'],
+    art: 'drawPuistokissa',
+    desc: 'A cat the size of a lynx with glowing eyes. It judges you. You are found wanting.',
+    attackMessages: {
+      pounce: 'The Puistokissa launches at you with terrifying speed!',
+      hiss: 'A hiss so loud it rattles your teeth!',
+      scratch: 'Claws like razors rake across your arm!',
+    }
+  },
+  grillikioski_mimic: {
+    id: 'grillikioski_mimic', name: 'Grillikioski-Mimic', region: 'helsinki',
+    levelRange: [2, 3], timeOfDay: 'day',
+    hp: 30, strength: 9, defense: 5, speed: 1, magic: 0,
+    xpReward: 28, goldReward: 15,
+    drops: [{ itemId: 'potion_small', chance: 0.3 }, { itemId: 'troll_hide', chance: 0.15 }],
+    attacks: ['chomp', 'ketchup_spray', 'door_slam'],
+    weaknesses: ['fire', 'ice'], resistances: ['physical'],
+    art: 'drawGrillikioskiMimic',
+    desc: 'What appeared to be an innocent grill kiosk opens its serving window like a mouth. The menu is YOU.',
+    attackMessages: {
+      chomp: 'The kiosk chomps down on you with its serving hatch!',
+      ketchup_spray: 'A jet of scalding ketchup blasts your face!',
+      door_slam: 'The side door swings open and slams into you!',
+    }
+  },
+
+  // --- Espoo: 3 new (night 5-6 gap + variety) ---
+  nuuksio_pöllö: {
+    id: 'nuuksio_pollo', name: 'Nuuksio-Pöllö', region: 'espoo',
+    levelRange: [5, 6], timeOfDay: 'night',
+    hp: 48, strength: 12, defense: 6, speed: 13, magic: 14,
+    xpReward: 70, goldReward: 42,
+    drops: [{ itemId: 'mana_small', chance: 0.25 }],
+    attacks: ['silent_dive', 'screech', 'talon_grip'],
+    weaknesses: ['lightning'], resistances: ['dark'],
+    art: 'drawNuuksioPöllö',
+    desc: 'An owl the size of a child, with eyes like twin moons. It swoops in absolute silence until the last second.',
+    attackMessages: {
+      silent_dive: 'You didn\'t hear it coming. You feel it now.',
+      screech: 'The Pöllö screeches — your ears ring and your vision blurs!',
+      talon_grip: 'Massive talons dig into your shoulders!',
+    }
+  },
+  data_keskus_henki: {
+    id: 'data_keskus_henki', name: 'Datakeskus-Henki', region: 'espoo',
+    levelRange: [4, 6],
+    hp: 52, strength: 12, defense: 9, speed: 6, magic: 11,
+    xpReward: 62, goldReward: 48,
+    drops: [{ itemId: 'tech_chip', chance: 0.25 }, { itemId: 'potion_medium', chance: 0.15 }],
+    attacks: ['overheat', 'data_surge', 'error_loop'],
+    weaknesses: ['ice', 'physical'], resistances: ['lightning', 'fire'],
+    art: 'drawDatakeskusHenki',
+    desc: 'The spirit of a dead server room, still generating heat. Its form flickers between racks of burning equipment.',
+    attackMessages: {
+      overheat: 'A wave of server heat washes over you — sweat pours!',
+      data_surge: 'Raw data slams into your mind like a wall!',
+      error_loop: 'Your thoughts loop — the same second repeats three times!',
+    }
+  },
+  sienimetsastaja: {
+    id: 'sienimetsastaja', name: 'Sienimetsästäjä', region: 'espoo',
+    levelRange: [4, 5], timeOfDay: 'day',
+    hp: 42, strength: 11, defense: 7, speed: 8, magic: 5,
+    xpReward: 52, goldReward: 38,
+    drops: [{ itemId: 'antidote', chance: 0.3 }, { itemId: 'hiisi_bark', chance: 0.15 }],
+    attacks: ['spore_cloud', 'vine_whip', 'toxic_bite'],
+    weaknesses: ['fire'], resistances: ['poison', 'dark'],
+    art: 'drawSienimetsästäjä',
+    desc: 'A shambling mass of sentient mushrooms wearing a backpack. It was once a forager. Now it forages YOU.',
+    attackMessages: {
+      spore_cloud: 'Toxic spores billow from its cap! You choke and stumble!',
+      vine_whip: 'A mycelium tendril lashes out like a whip!',
+      toxic_bite: 'Fungal teeth sink into your arm! The wound itches horribly.',
+    }
+  },
+
+  // --- Vantaa: 3 new (night 7-8 gap + variety) ---
+  lentokentta_vartija: {
+    id: 'lentokentta_vartija', name: 'Lentokenttävartija', region: 'vantaa',
+    levelRange: [7, 8], timeOfDay: 'night',
+    hp: 88, strength: 21, defense: 18, speed: 5, magic: 8,
+    xpReward: 128, goldReward: 75,
+    drops: [{ itemId: 'potion_large', chance: 0.2 }, { itemId: 'storm_shard', chance: 0.15 }],
+    attacks: ['baton_strike', 'taser', 'lockdown'],
+    weaknesses: ['dark', 'fire'], resistances: ['physical', 'lightning'],
+    art: 'drawLentokenttävartija',
+    desc: 'A security guard who never clocked out. Still patrolling. Still checking badges. His eyes glow with authority and death.',
+    attackMessages: {
+      baton_strike: 'The guard\'s spectral baton cracks against your skull!',
+      taser: 'ZAP! The ghost taser still works. Of course it does.',
+      lockdown: '"SECURITY BREACH!" Phantom barriers slam into you!',
+    }
+  },
+  jäteauto: {
+    id: 'jateauto', name: 'Jäteauto', region: 'vantaa',
+    levelRange: [7, 9], timeOfDay: 'day',
+    hp: 140, strength: 24, defense: 24, speed: 1, magic: 0,
+    xpReward: 148, goldReward: 65,
+    drops: [{ itemId: 'potion_large', chance: 0.2 }],
+    attacks: ['compactor', 'toxic_splash', 'ram'],
+    weaknesses: ['lightning'], resistances: ['physical', 'fire', 'poison', 'ice'],
+    art: 'drawJäteauto',
+    desc: 'A possessed garbage truck. It smells exactly how you\'d expect. It\'s angry because Tuesdays are its day off.',
+    attackMessages: {
+      compactor: 'The compactor jaws close around you! CRUNCH!',
+      toxic_splash: 'A wave of unidentifiable liquid sprays from the back!',
+      ram: 'The Jäteauto reverses into you at maximum beeping speed!',
+    }
+  },
+  keravanjoki_vesihiisi: {
+    id: 'keravanjoki_vesihiisi', name: 'Vesihiisi', region: 'vantaa',
+    levelRange: [8, 9],
+    hp: 95, strength: 20, defense: 12, speed: 9, magic: 18,
+    xpReward: 138, goldReward: 88,
+    drops: [{ itemId: 'mana_large', chance: 0.2 }, { itemId: 'drake_scale', chance: 0.1 }],
+    attacks: ['flood_wave', 'drag_under', 'river_curse'],
+    weaknesses: ['fire', 'lightning'], resistances: ['ice', 'physical'],
+    art: 'drawVesihiisi',
+    desc: 'A water demon rising from the Keravanjoki. Half liquid, half malice. It smells of river mud and broken promises.',
+    attackMessages: {
+      flood_wave: 'A wall of dark river water crashes over you!',
+      drag_under: 'The Vesihiisi pulls you beneath the current!',
+      river_curse: 'Ancient river-words weaken your resolve!',
+    }
+  },
+
+  // --- Kauniainen: 4 new (day 10-11, day 11-12, + variety) ---
+  haltija: {
+    id: 'haltija', name: 'Haltija', region: 'kauniainen',
+    levelRange: [10, 11], timeOfDay: 'day',
+    hp: 145, strength: 28, defense: 20, speed: 12, magic: 26,
+    xpReward: 260, goldReward: 145,
+    drops: [{ itemId: 'ancient_rune', chance: 0.2 }, { itemId: 'potion_full', chance: 0.1 }],
+    attacks: ['nature_wrath', 'root_prison', 'pollen_storm'],
+    weaknesses: ['fire', 'ice'], resistances: ['physical', 'dark'],
+    art: 'drawHaltija',
+    desc: 'A guardian spirit of the land itself. Beautiful and terrible. The trees lean toward it like sunflowers to the sun.',
+    attackMessages: {
+      nature_wrath: 'The earth erupts beneath your feet!',
+      root_prison: 'Living roots coil around your legs and squeeze!',
+      pollen_storm: 'A storm of golden pollen sears your lungs and blinds you!',
+    }
+  },
+  muinais_susi: {
+    id: 'muinais_susi', name: 'Muinaissusi', region: 'kauniainen',
+    levelRange: [11, 12], timeOfDay: 'day',
+    hp: 165, strength: 34, defense: 18, speed: 14, magic: 12,
+    xpReward: 310, goldReward: 160,
+    drops: [{ itemId: 'aurora_dust', chance: 0.15 }, { itemId: 'potion_full', chance: 0.1 }],
+    attacks: ['primordial_bite', 'howl_of_ages', 'pack_assault'],
+    weaknesses: ['fire'], resistances: ['dark', 'ice', 'physical'],
+    art: 'drawMuinaissusi',
+    desc: 'A wolf from before wolves existed. Its fur is silver smoke. Its eyes remember when Finland was under ice.',
+    attackMessages: {
+      primordial_bite: 'Jaws older than civilization close around your arm!',
+      howl_of_ages: 'The howl carries the weight of ten thousand winters!',
+      pack_assault: 'Ghost wolves materialize and attack from every direction!',
+    }
+  },
+  riekko_henki: {
+    id: 'riekko_henki', name: 'Riekkohenki', region: 'kauniainen',
+    levelRange: [10, 12],
+    hp: 120, strength: 22, defense: 15, speed: 16, magic: 32,
+    xpReward: 240, goldReward: 140,
+    drops: [{ itemId: 'mana_large', chance: 0.3 }, { itemId: 'ancient_rune', chance: 0.15 }],
+    attacks: ['spirit_peck', 'blinding_plumage', 'frost_feathers'],
+    weaknesses: ['fire', 'physical'], resistances: ['ice', 'lightning', 'dark'],
+    art: 'drawRiekkohenki',
+    desc: 'The spirit of a ptarmigan, Finland\'s national bird, enormous and crackling with ancient winter magic.',
+    attackMessages: {
+      spirit_peck: 'The Riekkohenki strikes with a beak of pure light!',
+      blinding_plumage: 'Its white feathers flare — you are temporarily blind!',
+      frost_feathers: 'A blizzard of spectral feathers cuts through you!',
+    }
+  },
+  kiviukko: {
+    id: 'kiviukko', name: 'Kiviukko', region: 'kauniainen',
+    levelRange: [10, 11], timeOfDay: 'night',
+    hp: 175, strength: 30, defense: 30, speed: 3, magic: 15,
+    xpReward: 265, goldReward: 155,
+    drops: [{ itemId: 'ancient_rune', chance: 0.25 }],
+    attacks: ['boulder_slam', 'stone_skin', 'earthquake'],
+    weaknesses: ['ice', 'lightning'], resistances: ['physical', 'fire', 'poison'],
+    art: 'drawKiviukko',
+    desc: 'A cairn that walks. Moss-bearded and slow, but each step shakes the earth. It has stood here since the Ice Age.',
+    attackMessages: {
+      boulder_slam: 'A fist of granite crashes down on you!',
+      stone_skin: 'The Kiviukko hardens — your attacks chip uselessly!',
+      earthquake: 'The ground bucks and cracks beneath your feet!',
+    }
+  },
+
   // Spirit phase of dragon
   lohikaarme_spirit: {
     id: 'lohikaarme_spirit', name: 'Lohikaarme (Spirit)', region: 'kauniainen',
@@ -1499,6 +1716,19 @@ const BESTIARY_NOTES = {
   sammakkoprinssi: "Researcher's note: Has been kissed 4,312 times. Still a frog. His lawyers are VERY busy.",
   lohikaarme: "Researcher's note: The big one. The really big one. Maybe bring a friend. And a will.",
   lohikaarme_spirit: "Researcher's note: You killed it and it's STILL fighting? That seems unfair.",
+  metromoijanen: "Researcher's note: Haunts the M1 line exclusively. Refuses to transfer. Has strong opinions about escalator etiquette.",
+  puistokissa: "Researcher's note: Technically a stray. Practically a demigod. Has killed three researchers. This is the fourth note.",
+  grillikioski_mimic: "Researcher's note: Lures victims with the smell of grilled sausage. The mustard is real. Everything else is teeth.",
+  nuuksio_pollo: "Researcher's note: Wingspan: 2 meters. Silence: absolute. Judgment: withering. Do not make eye contact.",
+  data_keskus_henki: "Researcher's note: Cause of death: someone unplugged it. Cause of undeath: it plugged itself back in.",
+  sienimetsastaja: "Researcher's note: Was once a mushroom forager named Erkki. Now IS the mushrooms. Still wears the backpack.",
+  lentokentta_vartija: "Researcher's note: Will ask for your boarding pass. You don't have one. This is non-negotiable.",
+  jateauto: "Researcher's note: Follows its original route on Tuesdays. Do not be standing where the bins used to be.",
+  keravanjoki_vesihiisi: "Researcher's note: The river is its body. Don't swim. Don't wade. Don't even look at it funny.",
+  haltija: "Researcher's note: A nature spirit. Polite but firm. 'Please leave the forest' is not a request. It's a countdown.",
+  muinais_susi: "Researcher's note: Carbon dating returns 'ERROR: TOO OLD.' The wolf finds this amusing.",
+  riekko_henki: "Researcher's note: Finland's national bird, supersized and furious. Patriotism has never been this painful.",
+  kiviukko: "Researcher's note: A walking cairn. Hikers keep adding rocks to it. It does not appreciate this.",
 };
 
 function recordBestiaryEntry(monsterId) {
@@ -4630,6 +4860,19 @@ function drawMonster(artId, region) {
     case 'drawKiitotiesusi': drawKiitotiesusi(); break;
     case 'drawRevontulihai': drawRevontulihai(); break;
     case 'drawSammakkoprinssi': drawSammakkoprinssi(); break;
+    case 'drawMetromoijanen': drawMetromoijanen(); break;
+    case 'drawPuistokissa': drawPuistokissa(); break;
+    case 'drawGrillikioskiMimic': drawGrillikioskiMimic(); break;
+    case 'drawNuuksioPöllö': drawNuuksioPöllö(); break;
+    case 'drawDatakeskusHenki': drawDatakeskusHenki(); break;
+    case 'drawSienimetsästäjä': drawSienimetsästäjä(); break;
+    case 'drawLentokenttävartija': drawLentokenttävartija(); break;
+    case 'drawJäteauto': drawJäteauto(); break;
+    case 'drawVesihiisi': drawVesihiisi(); break;
+    case 'drawHaltija': drawHaltija(); break;
+    case 'drawMuinaissusi': drawMuinaissusi(); break;
+    case 'drawRiekkohenki': drawRiekkohenki(); break;
+    case 'drawKiviukko': drawKiviukko(); break;
     default: break;
   }
 }
@@ -5556,6 +5799,259 @@ function drawSammakkoprinssi() {
   // Webbed feet
   rect(x - 2, y + 28, 14, 4, '#2a5a2a');
   rect(x + 16, y + 28, 14, 4, '#2a5a2a');
+}
+
+// --- Wave 2 Monsters ---
+function drawMetromoijanen() {
+  const x = 135, y = 60;
+  circle(x + 20, y + 35, 30, '#4060a015');
+  rect(x + 5, y + 10, 30, 55, '#6080b050');
+  rect(x + 10, y + 15, 20, 45, '#8090c060');
+  circle(x + 20, y + 5, 10, '#8090c060');
+  rect(x + 13, y + 2, 4, 4, '#80c0ff');
+  rect(x + 23, y + 2, 4, 4, '#80c0ff');
+  rect(x + 15, y + 10, 10, 2, '#6080b0');
+  for (let i = 0; i < 4; i++) {
+    rect(x + 8 + i * 5, y + 63 + i * 2, 4, 5 - i, '#6080b030');
+  }
+  rect(x - 8, y + 25, 14, 4, '#8090c040');
+  rect(x + 34, y + 25, 14, 4, '#8090c040');
+}
+
+function drawPuistokissa() {
+  const x = 140, y = 80;
+  rect(x, y, 30, 18, '#2a2a2a');
+  rect(x + 3, y + 2, 24, 14, '#3a3a3a');
+  circle(x + 15, y - 4, 9, '#3a3a3a');
+  rect(x + 4, y - 10, 6, 7, '#3a3a3a');
+  rect(x + 20, y - 10, 6, 7, '#3a3a3a');
+  rect(x + 6, y - 8, 2, 3, '#ff80c0');
+  rect(x + 22, y - 8, 2, 3, '#ff80c0');
+  rect(x + 8, y - 6, 5, 4, '#40ff40');
+  rect(x + 10, y - 5, 2, 2, '#1a1a1a');
+  rect(x + 18, y - 6, 5, 4, '#40ff40');
+  rect(x + 20, y - 5, 2, 2, '#1a1a1a');
+  rect(x + 13, y - 1, 4, 2, '#ff80a0');
+  rect(x - 12, y + 6, 14, 3, '#3a3a3a');
+  rect(x - 18, y + 4, 8, 2, '#3a3a3a');
+  rect(x + 5, y + 16, 5, 8, '#2a2a2a');
+  rect(x + 20, y + 16, 5, 8, '#2a2a2a');
+}
+
+function drawGrillikioskiMimic() {
+  const x = 110, y = 55;
+  rect(x, y, 80, 60, '#cc3030');
+  rect(x + 5, y + 5, 70, 50, '#dd4040');
+  rect(x + 10, y + 8, 60, 15, '#1a1a1a');
+  rect(x + 12, y + 10, 56, 3, '#e0e0c0');
+  rect(x + 14, y + 11, 4, 5, '#ffffff');
+  rect(x + 62, y + 11, 4, 5, '#ffffff');
+  rect(x + 20, y + 14, 40, 5, '#8a2020');
+  rect(x + 15, y + 28, 50, 20, '#e0c060');
+  text('MENU', x + 25, y + 32, '#cc2020', 6);
+  text('YOU', x + 30, y + 40, '#cc2020', 6);
+  rect(x + 5, y + 55, 8, 12, '#aa2020');
+  rect(x + 67, y + 55, 8, 12, '#aa2020');
+}
+
+function drawNuuksioPöllö() {
+  const x = 140, y = 65;
+  rect(x, y, 28, 30, '#5a3a1a');
+  rect(x + 3, y + 3, 22, 24, '#6a4a2a');
+  circle(x + 14, y - 5, 12, '#6a4a2a');
+  circle(x + 6, y - 6, 7, '#e0d0a0');
+  circle(x + 6, y - 6, 4, '#1a1a1a');
+  circle(x + 6, y - 6, 2, '#ffcc00');
+  circle(x + 22, y - 6, 7, '#e0d0a0');
+  circle(x + 22, y - 6, 4, '#1a1a1a');
+  circle(x + 22, y - 6, 2, '#ffcc00');
+  rect(x + 12, y - 2, 4, 3, '#c08020');
+  rect(x - 15, y + 2, 18, 5, '#5a3a1a');
+  rect(x - 20, y, 8, 3, '#5a3a1a');
+  rect(x + 25, y + 2, 18, 5, '#5a3a1a');
+  rect(x + 40, y, 8, 3, '#5a3a1a');
+  rect(x + 6, y + 28, 5, 8, '#c08020');
+  rect(x + 17, y + 28, 5, 8, '#c08020');
+}
+
+function drawDatakeskusHenki() {
+  const x = 120, y = 50;
+  rect(x, y, 60, 60, '#2a2a3a60');
+  for (let i = 0; i < 4; i++) {
+    rect(x + 5 + i * 14, y + 5, 10, 50, '#3a3a4a80');
+    for (let j = 0; j < 6; j++) {
+      rect(x + 7 + i * 14, y + 8 + j * 8, 3, 2, j % 2 === 0 ? '#00ff0080' : '#ff000060');
+    }
+  }
+  rect(x + 15, y + 20, 30, 20, '#ff400030');
+  circle(x + 30, y + 30, 15, '#ff600020');
+  rect(x + 10, y - 5, 8, 8, '#ff8040');
+  rect(x + 42, y - 3, 6, 6, '#ff6020');
+  rect(x + 25, y + 58, 10, 8, '#ff400040');
+}
+
+function drawSienimetsästäjä() {
+  const x = 140, y = 60;
+  rect(x + 2, y + 20, 22, 35, '#6a5a3a');
+  rect(x + 5, y + 22, 16, 30, '#7a6a4a');
+  circle(x + 13, y + 10, 14, '#aa3030');
+  circle(x + 13, y + 8, 12, '#cc4040');
+  rect(x + 5, y + 3, 3, 3, '#ffffff');
+  rect(x + 15, y + 5, 2, 2, '#ffffff');
+  rect(x + 10, y + 1, 3, 2, '#ffffff');
+  rect(x + 7, y + 15, 4, 4, '#1a1a1a');
+  rect(x + 15, y + 15, 4, 4, '#1a1a1a');
+  rect(x + 9, y + 22, 8, 2, '#4a3a1a');
+  rect(x - 6, y + 30, 10, 4, '#6a5a3a');
+  rect(x + 22, y + 28, 10, 4, '#6a5a3a');
+  rect(x + 20, y + 22, 12, 15, '#5a4a2a');
+  rect(x + 5, y + 53, 6, 8, '#6a5a3a');
+  rect(x + 15, y + 53, 6, 8, '#6a5a3a');
+}
+
+function drawLentokenttävartija() {
+  const x = 140, y = 50;
+  rect(x, y + 15, 28, 50, '#1a2a4a70');
+  rect(x + 3, y + 18, 22, 44, '#2a3a5a70');
+  circle(x + 14, y + 5, 10, '#8090c070');
+  rect(x + 5, y - 2, 18, 6, '#2a3a5a80');
+  rect(x + 3, y - 3, 22, 3, '#3a4a6a80');
+  rect(x + 8, y + 2, 4, 3, '#80c0ff');
+  rect(x + 16, y + 2, 4, 3, '#80c0ff');
+  rect(x - 10, y + 25, 12, 5, '#2a3a5a60');
+  rect(x - 14, y + 23, 6, 3, '#4a4a4a');
+  rect(x + 26, y + 25, 12, 5, '#2a3a5a60');
+  rect(x + 34, y + 23, 8, 12, '#3a3a3a60');
+  rect(x + 8, y + 63, 5, 5, '#1a2a4a50');
+  rect(x + 15, y + 63, 5, 5, '#1a2a4a50');
+}
+
+function drawJäteauto() {
+  const x = 75, y = 65;
+  rect(x, y, 150, 50, '#4a6a2a');
+  rect(x + 5, y + 5, 140, 40, '#5a7a3a');
+  rect(x + 130, y - 15, 30, 20, '#4a6a2a');
+  rect(x + 135, y - 10, 20, 12, '#80a0c0');
+  rect(x + 137, y - 8, 7, 4, '#ff2020');
+  rect(x + 148, y - 8, 7, 4, '#ff2020');
+  rect(x + 5, y + 10, 30, 25, '#3a3a3a');
+  rect(x + 8, y + 12, 24, 20, '#1a1a1a');
+  circle(x + 30, y + 52, 10, '#1a1a1a');
+  circle(x + 120, y + 52, 10, '#1a1a1a');
+  circle(x + 30, y + 52, 5, '#3a3a3a');
+  circle(x + 120, y + 52, 5, '#3a3a3a');
+  rect(x + 40, y - 10, 5, 12, '#6a8a3a');
+  rect(x + 60, y + 15, 60, 4, '#3a5a1a');
+  rect(x + 60, y + 25, 60, 4, '#3a5a1a');
+  rect(x + 60, y + 35, 60, 4, '#3a5a1a');
+}
+
+function drawVesihiisi() {
+  const x = 125, y = 55;
+  rect(x - 5, y + 50, 70, 40, '#1a3a5a60');
+  rect(x + 10, y + 20, 40, 40, '#2a5a7a80');
+  rect(x + 15, y + 25, 30, 30, '#3a6a8a80');
+  circle(x + 30, y + 10, 14, '#2a5a7a80');
+  rect(x + 20, y + 5, 6, 5, '#40c0ff');
+  rect(x + 34, y + 5, 6, 5, '#40c0ff');
+  rect(x + 24, y + 14, 12, 3, '#1a3a5a');
+  rect(x, y + 30, 12, 6, '#2a5a7a70');
+  rect(x - 8, y + 28, 10, 4, '#2a5a7a60');
+  rect(x + 48, y + 30, 12, 6, '#2a5a7a70');
+  rect(x + 58, y + 28, 10, 4, '#2a5a7a60');
+  for (let i = 0; i < 6; i++) {
+    rect(x + i * 10, y + 52 + (i % 3), 5, 2, '#4a7a9a');
+  }
+}
+
+function drawHaltija() {
+  const x = 130, y = 45;
+  rect(x + 5, y + 15, 35, 55, '#2a5a2a');
+  rect(x + 10, y + 20, 25, 45, '#3a7a3a');
+  circle(x + 22, y + 5, 12, '#80c060');
+  rect(x + 8, y - 10, 4, 12, '#3a6a2a');
+  rect(x + 15, y - 15, 4, 16, '#3a7a2a');
+  rect(x + 22, y - 18, 4, 18, '#4a8a3a');
+  rect(x + 29, y - 12, 4, 13, '#3a7a2a');
+  circle(x + 10, y - 12, 3, '#40a040');
+  circle(x + 24, y - 20, 4, '#60c060');
+  circle(x + 31, y - 14, 3, '#40a040');
+  rect(x + 15, y + 2, 5, 4, '#40a040');
+  rect(x + 25, y + 2, 5, 4, '#40a040');
+  rect(x + 18, y + 9, 8, 2, '#2a5a2a');
+  rect(x - 5, y + 25, 12, 5, '#2a5a2a');
+  rect(x + 38, y + 25, 12, 5, '#2a5a2a');
+  circle(x - 2, y + 40, 3, '#80ff8030');
+  circle(x + 42, y + 35, 3, '#80ff8030');
+  rect(x + 12, y + 68, 8, 6, '#2a5a2a');
+  rect(x + 25, y + 68, 8, 6, '#2a5a2a');
+}
+
+function drawMuinaissusi() {
+  const x = 110, y = 55;
+  rect(x + 15, y + 10, 55, 30, '#8a8aaa60');
+  rect(x + 20, y + 13, 45, 24, '#9a9abc70');
+  rect(x + 65, y + 3, 25, 22, '#8a8aaa60');
+  rect(x + 85, y + 6, 12, 10, '#8a8aaa60');
+  rect(x + 72, y + 6, 5, 4, '#c0c0ff');
+  rect(x + 73, y + 7, 2, 2, '#ffffff');
+  rect(x + 68, y - 4, 5, 10, '#8a8aaa50');
+  rect(x + 78, y - 3, 5, 9, '#8a8aaa50');
+  rect(x + 87, y + 14, 3, 4, '#c0c0d0');
+  rect(x + 91, y + 14, 3, 4, '#c0c0d0');
+  rect(x, y + 15, 18, 6, '#8a8aaa50');
+  rect(x - 8, y + 12, 10, 4, '#9a9abc50');
+  rect(x + 20, y + 38, 8, 14, '#8a8aaa50');
+  rect(x + 35, y + 38, 8, 14, '#8a8aaa50');
+  rect(x + 50, y + 38, 8, 14, '#8a8aaa50');
+  for (let i = 0; i < 4; i++) {
+    circle(x + 15 + i * 12, y + 5 - i * 2, 2, '#c0c0ff20');
+  }
+}
+
+function drawRiekkohenki() {
+  const x = 130, y = 60;
+  rect(x, y, 35, 25, '#e0e0f0');
+  rect(x + 3, y + 3, 29, 19, '#f0f0ff');
+  circle(x + 17, y - 5, 10, '#e0e0f0');
+  rect(x + 10, y - 7, 4, 3, '#ff2020');
+  rect(x + 20, y - 7, 4, 3, '#ff2020');
+  rect(x + 14, y - 4, 3, 3, '#1a1a3a');
+  rect(x + 20, y - 4, 3, 3, '#1a1a3a');
+  rect(x + 16, y, 4, 3, '#e0a020');
+  rect(x - 10, y + 5, 14, 4, '#d0d0e0');
+  rect(x - 15, y + 3, 8, 3, '#c0c0d0');
+  rect(x + 31, y + 5, 14, 4, '#d0d0e0');
+  rect(x + 42, y + 3, 8, 3, '#c0c0d0');
+  rect(x + 28, y + 8, 12, 6, '#c0c0d0');
+  rect(x + 8, y + 23, 5, 8, '#e0a020');
+  rect(x + 22, y + 23, 5, 8, '#e0a020');
+  circle(x + 5, y + 10, 4, '#80c0ff30');
+  circle(x + 30, y + 15, 3, '#80c0ff30');
+  circle(x + 17, y - 10, 3, '#80c0ff20');
+}
+
+function drawKiviukko() {
+  const x = 120, y = 35;
+  rect(x + 10, y + 20, 55, 65, '#6a6a6a');
+  rect(x + 15, y + 25, 45, 55, '#7a7a7a');
+  for (let i = 0; i < 5; i++) {
+    rect(x + 18 + i * 8, y + 28 + i * 10, 6, 8, '#5a5a5a');
+  }
+  rect(x + 18, y, 38, 24, '#6a6a6a');
+  rect(x + 22, y + 4, 30, 16, '#7a7a7a');
+  rect(x + 26, y + 7, 6, 5, '#40a040');
+  rect(x + 42, y + 7, 6, 5, '#40a040');
+  rect(x + 30, y + 15, 14, 3, '#4a4a4a');
+  rect(x + 22, y - 3, 8, 6, '#5a6a5a');
+  rect(x + 44, y - 2, 6, 5, '#5a6a5a');
+  rect(x + 30, y - 5, 3, 5, '#4a5a4a');
+  rect(x, y + 35, 14, 40, '#6a6a6a');
+  rect(x + 61, y + 35, 14, 40, '#6a6a6a');
+  rect(x - 4, y + 70, 18, 10, '#5a5a5a');
+  rect(x + 59, y + 70, 18, 10, '#5a5a5a');
+  rect(x + 15, y + 80, 18, 14, '#6a6a6a');
+  rect(x + 42, y + 80, 18, 14, '#6a6a6a');
 }
 
 // --- BOSS: The Dragon ---
