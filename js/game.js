@@ -1995,6 +1995,16 @@ const state = {
 
 function createPlayer(name, playerClass) {
   const base = CLASS_BASE[playerClass];
+
+  // Class-specific starting gold and items
+  const startingGold = playerClass === 'warrior' ? 30 : 40;
+  const startingInventory = [{ id: 'potion_small', quantity: 2 }];
+  if (playerClass === 'mage') {
+    startingInventory.push({ id: 'mana_small', quantity: 1 });
+  } else if (playerClass === 'rogue') {
+    startingInventory.push({ id: 'escape_scroll', quantity: 1 });
+  }
+
   state.player = {
     name,
     class: playerClass,
@@ -2009,13 +2019,11 @@ function createPlayer(name, playerClass) {
     defense: base.def,
     magic: base.mag,
     speed: base.spd,
-    gold: 30,
+    gold: startingGold,
     weapon: { id: 'fists', name: 'Bare Fists', attackBonus: 0, price: 0 },
     armor: { id: 'clothes', name: 'Old Clothes', defenseBonus: 0, price: 0 },
     accessory: null,
-    inventory: [
-      { id: 'potion_small', quantity: 2 },
-    ],
+    inventory: startingInventory,
     currentRegion: 'helsinki',
     activeQuests: [],
     completedQuests: [],
@@ -2369,7 +2377,9 @@ function doPlayerAttack(stance) {
       damageMultiplier = 1.4;
       hitMessage = pick(AGGRESSIVE_TEXTS);
       // Crit chance
-      const critChance = 0.15 + (p.accessory?.effect === 'critBonus' ? p.accessory.value : 0);
+      // Base crit + accessory + speed scaling (rogue benefits most from this)
+      const speedCritBonus = Math.max(0, (p.speed - 5) * 0.01);
+      const critChance = 0.15 + speedCritBonus + (p.accessory?.effect === 'critBonus' ? p.accessory.value : 0);
       if (Math.random() < critChance) {
         damageMultiplier *= 2;
         hitMessage = pick(CRIT_TEXTS);
@@ -7373,6 +7383,11 @@ function handleMapMove(dx, dy) {
     addMsg(`The ${TIME_NAMES[newTime].toLowerCase()} settles over the land...`, 'system');
     if (newTime === 'night') addMsg('Strange creatures stir in the darkness.', 'event');
     if (newTime === 'dawn') addMsg('The first light brings relief.', 'narrator');
+  }
+
+  // Mage MP regen out of combat (1 MP per step)
+  if (state.player.class === 'mage' && state.player.mp < state.player.maxMp) {
+    state.player.mp = Math.min(state.player.maxMp, state.player.mp + 1);
   }
 
   // Check for landmark

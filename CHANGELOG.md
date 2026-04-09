@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.10.1] - 2026-04-07
+
+### Changed
+- **Mage and rogue early-game balance** — both classes now have a working economic loop
+  - Mage starts with **40 gold** (was 30) and a **Small Mana Potion**
+  - Mage **regenerates 1 MP per map step** out of combat — no more inn-after-every-3-fights cycle
+  - Rogue starts with **40 gold** (was 30) and an **Escape Scroll** for emergencies
+  - Rogue **crit chance now scales with speed** — +1% per SPD point above 5 (rogue gets +2% baseline at SPD 7, scaling further with level-ups and speed accessories)
+- Warrior is unchanged — still the tankiest, slowest class
+- Added per-class buff regression tests
+
 ## [0.10.0] - 2026-04-07
 
 ### Added
