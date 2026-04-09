@@ -52,11 +52,12 @@ A mix of Finnish mythology, urban fantasy, and absurdist humor:
 
 ## Controls
 
-- **Number keys 1-9** or **click** to select menu options
+- **Number keys 1-9** then **letters A-Z** or **click** to select menu options
 - **WASD / Arrow keys** to move on the forest map
 - **M key** in forest to view the map
 - **M button** in status bar to toggle music
 - **S button** in status bar to toggle sound effects
+- **Resize the window** to scale the game (auto-fits to viewport)
 
 ## Tech Stack
 

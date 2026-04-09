@@ -1,5 +1,35 @@
 # Changelog
 
+## [0.11.0] - 2026-04-07
+
+### Added
+- **Responsive scaling** — the game now scales with browser/window size
+  - New `#scaleWrapper` applies `transform: scale()` based on viewport dimensions
+  - Snaps to 0.5 increments above 1× for crisp pixel-perfect rendering
+  - Allows down to 0.4× on small windows so the game still fits
+  - Auto-rescales on window resize
+  - Electron window now starts at 720×780 with `minWidth: 400` / `minHeight: 500` and is resizable
+- **Menu keys A-Z for items 10+** — menus with more than 9 options are now fully keyboard-accessible
+  - `setMenu()` auto-assigns keys: 1-9 for first nine items, then A-Z for items 10-35
+  - Keyboard handler accepts both numbers and letters (case-insensitive)
+  - Forest screen still reserves WASD/M for movement, so letters only apply to other screens
+- **News board visual upgrade** — wooden-framed cork board with 5 pinned papers
+  - Cork texture, wood grain frame
+  - White lined note, yellow sticky note, center "NEWS" parchment, torn paper note, "WANTED" poster with red dragon silhouette
+  - Various colored pins (red, blue, gold, green) at different angles
+  - Decorative twine connecting two papers
+- **Quest board visual upgrade** — stone brick wall with elaborate wooden board
+  - Properly tiled brick pattern with mortar lines
+  - Iron studs at corners and middle of frame
+  - Red tattered banner header reading "QUESTS"
+  - 5 pinned quest parchments: KILL (sword icon), FETCH (bag icon), MAIN (dragon silhouette, triple-pinned), URGENT (with stamp), REQUEST (with signature)
+  - Decorative twine and a red wax seal in the corner
+
+### Fixed
+- **Number key spilling into name input** — pressing 1/2/3 to choose a class no longer prefills the name box with that digit
+  - Added `e.preventDefault()` on menu key matches
+  - Keyboard handler now skips menu interception when the name input is focused
+
 ## [0.10.2] - 2026-04-07
 
 ### Added

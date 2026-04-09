@@ -4734,27 +4734,196 @@ function drawTavern() {
 
 function drawQuestBoard() {
   clear('#1a1a20');
-  // Stone wall
-  rect(0, 0, 320, 200, '#2a2a30');
 
-  // Wooden board
-  rect(60, 20, 200, 160, '#4a3a2a');
-  rect(58, 18, 204, 4, '#5a4a3a');
-  rect(58, 178, 204, 4, '#5a4a3a');
-  rect(58, 18, 4, 164, '#5a4a3a');
-  rect(258, 18, 4, 164, '#5a4a3a');
+  // Stone wall background with mortar lines
+  rect(0, 0, 320, 200, '#3a3a40');
+  // Brick pattern
+  for (let row = 0; row < 11; row++) {
+    const offset = (row % 2) * 18;
+    for (let col = -1; col < 10; col++) {
+      const bx = col * 36 + offset;
+      const by = row * 19;
+      rect(bx, by, 35, 18, '#4a4a52');
+      // Brick highlight
+      rect(bx, by, 35, 1, '#5a5a62');
+      rect(bx, by, 1, 17, '#5a5a62');
+    }
+  }
+  // Mortar darker between bricks
+  for (let row = 0; row < 12; row++) {
+    rect(0, row * 19 - 1, 320, 1, '#2a2a30');
+  }
 
-  // Nails
-  circle(65, 25, 2, '#8a8a8a');
-  circle(255, 25, 2, '#8a8a8a');
-  circle(65, 175, 2, '#8a8a8a');
-  circle(255, 175, 2, '#8a8a8a');
+  // Outer wooden frame (darker)
+  rect(20, 12, 280, 184, '#2a1a08');
 
-  // "QUESTS" header on board
-  textCenter('QUESTS', 30, '#e0d0a0', 8);
-  rect(100, 42, 120, 1, '#6a5a4a');
+  // Inner wooden board (lighter)
+  rect(24, 16, 272, 176, '#5a3a1a');
+  rect(26, 18, 268, 172, '#6a4a22');
 
-  text('Quest Board', 10, 5, '#a0a0c0', 7);
+  // Wood grain on the board
+  for (let i = 0; i < 18; i++) {
+    rect(28, 22 + i * 9, 264, 1, '#4a2a12');
+  }
+  for (let i = 0; i < 6; i++) {
+    rect(50 + i * 40, 18, 1, 172, '#3a2a10');
+  }
+
+  // Frame nails / iron studs (corners + middle)
+  const studPositions = [[28, 20], [292, 20], [28, 188], [292, 188], [160, 20], [160, 188], [28, 104], [292, 104]];
+  for (const [sx, sy] of studPositions) {
+    circle(sx, sy, 3, '#3a3a3a');
+    circle(sx, sy, 2, '#5a5a5a');
+    rect(sx - 1, sy - 1, 1, 1, '#8a8a8a'); // highlight
+  }
+
+  // ===== HEADER BANNER =====
+  // Tattered banner across the top
+  rect(70, 22, 180, 18, '#2a1a0a');
+  rect(72, 24, 176, 14, '#7a1a1a'); // red banner
+  rect(72, 24, 176, 2, '#9a3030'); // banner highlight
+  // Banner triangular ends
+  rect(66, 24, 6, 14, '#7a1a1a');
+  rect(64, 26, 2, 10, '#7a1a1a');
+  rect(248, 24, 6, 14, '#7a1a1a');
+  rect(254, 26, 2, 10, '#7a1a1a');
+  // Banner text
+  textCenter('QUESTS', 28, '#ffe080', 7);
+  // Banner shadow line
+  rect(70, 38, 180, 2, '#3a0a0a');
+
+  // ===== QUEST PARCHMENTS PINNED TO THE BOARD =====
+
+  // Parchment 1 — top-left, "kill quest" with sword icon
+  rect(40, 50, 70, 50, '#1a1a1a40'); // shadow
+  rect(38, 48, 70, 50, '#e8d0a0'); // parchment
+  // Slightly darker edges (aged)
+  rect(38, 48, 70, 2, '#c8b080');
+  rect(38, 96, 70, 2, '#c8b080');
+  // Header bar
+  rect(40, 50, 66, 6, '#5a2a1a');
+  textCenter('KILL', 51, '#ffd060', 5);
+  // Sword icon
+  rect(50, 60, 1, 18, '#9090a0'); // blade
+  rect(48, 78, 5, 1, '#7a4a2a');  // crossguard
+  rect(50, 79, 1, 4, '#5a3a1a');  // hilt
+  rect(49, 83, 3, 2, '#aa8030');  // pommel
+  // Lines of text
+  for (let i = 0; i < 5; i++) {
+    rect(58, 62 + i * 6, 44 - (i % 3) * 6, 1, '#5a4a3a');
+  }
+  // Dark brown pin
+  circle(72, 48, 3, '#5a2010');
+  rect(71, 47, 1, 1, '#aa6030');
+
+  // Parchment 2 — top-right, "fetch quest" with item icon
+  rect(212, 52, 70, 48, '#1a1a1a40');
+  rect(210, 50, 70, 48, '#e0c890');
+  rect(210, 50, 70, 2, '#c0a870');
+  rect(210, 96, 70, 2, '#c0a870');
+  // Header
+  rect(212, 52, 66, 6, '#1a4a2a');
+  textCenter('FETCH', 53, '#a0e0a0', 5);
+  // Bag icon
+  rect(220, 64, 14, 14, '#7a5a2a');
+  rect(220, 62, 14, 3, '#5a3a1a'); // bag opening
+  rect(222, 60, 4, 2, '#5a3a1a'); // strap
+  rect(228, 60, 4, 2, '#5a3a1a');
+  // Lines of text
+  for (let i = 0; i < 4; i++) {
+    rect(240, 64 + i * 6, 36 - (i % 3) * 5, 1, '#5a4a3a');
+  }
+  // Green pin
+  circle(238, 50, 3, '#206030');
+  rect(237, 49, 1, 1, '#60a060');
+
+  // Parchment 3 — bottom-left, "main quest" with dragon (the slay the dragon quest)
+  rect(40, 110, 80, 70, '#1a1a1a50');
+  rect(38, 108, 80, 70, '#f0d8a0'); // larger, more elaborate
+  rect(38, 108, 80, 2, '#c8a870');
+  rect(38, 176, 80, 2, '#c8a870');
+  // Decorative border
+  rect(40, 110, 76, 1, '#aa3030');
+  rect(40, 174, 76, 1, '#aa3030');
+  rect(40, 110, 1, 64, '#aa3030');
+  rect(115, 110, 1, 64, '#aa3030');
+  // Header
+  rect(42, 112, 74, 8, '#3a0a0a');
+  textCenter('MAIN', 113, '#ffcc40', 6);
+  // Dragon silhouette
+  rect(50, 124, 24, 8, '#aa1010');
+  rect(46, 127, 4, 4, '#aa1010');
+  rect(72, 122, 4, 6, '#aa1010');
+  rect(70, 132, 6, 3, '#aa1010');
+  // Wing
+  rect(54, 120, 16, 3, '#7a0808');
+  // Eye
+  rect(75, 124, 1, 1, '#ffff00');
+  // Lines
+  for (let i = 0; i < 7; i++) {
+    rect(80, 124 + i * 6, 32 - (i % 4) * 4, 1, '#6a3a1a');
+  }
+  // Three pins (extra-pinned because important)
+  circle(46, 110, 3, '#aa2010');
+  rect(45, 109, 1, 1, '#ff6060');
+  circle(78, 110, 3, '#aa2010');
+  rect(77, 109, 1, 1, '#ff6060');
+  circle(110, 110, 3, '#aa2010');
+  rect(109, 109, 1, 1, '#ff6060');
+
+  // Parchment 4 — bottom-right, smaller note ("urgent" stamped)
+  rect(140, 110, 60, 44, '#1a1a1a40');
+  rect(138, 108, 60, 44, '#e8d0a0');
+  rect(138, 108, 60, 2, '#c8b080');
+  rect(138, 150, 60, 2, '#c8b080');
+  // Lines
+  for (let i = 0; i < 5; i++) {
+    rect(142, 114 + i * 6, 52 - (i % 3) * 6, 1, '#5a4a3a');
+  }
+  // URGENT stamp at angle (just text)
+  rect(146, 130, 40, 12, '#aa202020');
+  text('URGENT', 150, 133, '#aa2020', 6);
+  // Yellow pin
+  circle(168, 108, 3, '#aa8a20');
+  rect(167, 107, 1, 1, '#ffe060');
+
+  // Parchment 5 — bottom-right corner, request scroll
+  rect(212, 110, 70, 70, '#1a1a1a40');
+  rect(210, 108, 70, 70, '#dac890');
+  // Curled edge effect at bottom
+  rect(210, 174, 70, 4, '#aa9870');
+  rect(210, 178, 70, 2, '#8a7a50');
+  rect(210, 108, 70, 2, '#bca870');
+  // Header
+  rect(212, 110, 66, 6, '#1a3a4a');
+  textCenter('REQUEST', 111, '#80c0e0', 5);
+  // Lines
+  for (let i = 0; i < 7; i++) {
+    rect(216, 120 + i * 6, 60 - (i % 4) * 4, 1, '#5a4a3a');
+  }
+  // Signature scribble at the bottom
+  rect(218, 162, 18, 1, '#3a2a1a');
+  rect(220, 164, 14, 1, '#3a2a1a');
+  rect(222, 166, 8, 1, '#3a2a1a');
+  // Blue pin
+  circle(244, 108, 3, '#1a3a8a');
+  rect(243, 107, 1, 1, '#60a0ff');
+
+  // ===== DECORATIVE ELEMENTS =====
+
+  // String/twine connecting two parchments
+  for (let i = 0; i < 35; i++) {
+    rect(108 + i * 3, 75 + Math.sin(i * 0.4) * 3, 1, 1, '#5a3a1a');
+  }
+
+  // A small wax seal in the corner
+  circle(285, 180, 4, '#7a1a1a');
+  circle(285, 180, 3, '#aa2030');
+  rect(283, 178, 1, 1, '#ffcc60');
+  rect(286, 181, 1, 1, '#ffcc60');
+
+  // Title at the very top
+  text('Quest Board', 10, 3, '#c0c0e0', 7);
 }
 
 // ===================== FOREST SCENES =====================
@@ -6395,10 +6564,116 @@ function drawStats() {
 
 function drawNewsBoard() {
   clear('#1a1008');
-  rect(40, 10, 240, 180, '#2a1a0a');
-  rect(42, 12, 236, 176, '#3a2a1a');
-  textCenter('News Board', 18, '#e0c080', 8);
-  rect(80, 30, 160, 1, '#5a4a3a');
+
+  // Cork board background with darker frame
+  rect(20, 8, 280, 184, '#3a2010'); // outer frame
+  rect(24, 12, 272, 176, '#6a4a2a'); // inner frame (lighter wood)
+  rect(28, 16, 264, 168, '#9a6a3a'); // cork surface
+
+  // Cork texture: random small dots
+  const corkDots = [
+    [40, 30], [55, 50], [80, 25], [110, 60], [135, 35], [160, 55],
+    [190, 28], [215, 48], [245, 32], [270, 55], [50, 80], [95, 95],
+    [140, 85], [185, 105], [230, 90], [265, 110], [45, 130], [90, 145],
+    [135, 135], [180, 155], [225, 140], [260, 160], [60, 170], [200, 175],
+  ];
+  for (const [dx, dy] of corkDots) {
+    rect(dx, dy, 1, 1, '#7a5a2a');
+    rect(dx + 1, dy + 1, 1, 1, '#bb8a4a');
+  }
+
+  // Wood grain on frame
+  for (let i = 0; i < 8; i++) {
+    rect(24 + i * 34, 12, 1, 4, '#5a3a1a');
+    rect(24 + i * 34, 184, 1, 4, '#5a3a1a');
+    rect(24, 16 + i * 22, 4, 1, '#5a3a1a');
+    rect(292, 16 + i * 22, 4, 1, '#5a3a1a');
+  }
+
+  // ---- PINNED PAPERS ----
+
+  // Paper 1 — top-left, slightly tilted (white note)
+  rect(38, 24, 56, 40, '#1a1a1a30'); // shadow
+  rect(36, 22, 56, 40, '#f0e8d8');   // white paper
+  // Lines on paper
+  for (let i = 0; i < 5; i++) {
+    rect(40, 30 + i * 6, 48, 1, '#a0a090');
+  }
+  // Red pin
+  circle(64, 22, 3, '#aa2020');
+  circle(63, 21, 1, '#ff6060');
+
+  // Paper 2 — top-right, yellow sticky note
+  rect(196, 26, 50, 36, '#1a1a1a30');
+  rect(194, 24, 50, 36, '#e8d860');
+  // Scribbled text lines
+  for (let i = 0; i < 4; i++) {
+    rect(198, 32 + i * 7, 38 - i * 3, 1, '#5a4a20');
+  }
+  rect(198, 53, 22, 1, '#5a4a20');
+  // Blue pin
+  circle(218, 25, 3, '#2050aa');
+  circle(217, 24, 1, '#60a0ff');
+
+  // Paper 3 — center main news (parchment)
+  rect(102, 38, 92, 100, '#1a1a1a40');
+  rect(100, 36, 92, 100, '#e8d8b0');
+  // Title bar
+  rect(104, 40, 84, 8, '#aa2020');
+  textCenter('NEWS', 41, '#ffe0a0', 6);
+  // Body lines
+  for (let i = 0; i < 9; i++) {
+    rect(106, 54 + i * 8, 82 - (i % 3) * 6, 1, '#6a5a3a');
+  }
+  // Two pins at top corners
+  circle(108, 38, 3, '#cc8020');
+  circle(107, 37, 1, '#ffcc60');
+  circle(184, 38, 3, '#cc8020');
+  circle(183, 37, 1, '#ffcc60');
+
+  // Paper 4 — bottom-left, small torn note
+  rect(38, 140, 44, 38, '#1a1a1a30');
+  rect(36, 138, 44, 38, '#d0c8a0');
+  // Torn edge effect (jagged top)
+  rect(36, 138, 4, 2, '#9a6a3a');
+  rect(42, 138, 6, 2, '#9a6a3a');
+  rect(52, 138, 4, 2, '#9a6a3a');
+  rect(62, 138, 6, 2, '#9a6a3a');
+  rect(72, 138, 4, 2, '#9a6a3a');
+  // Lines
+  for (let i = 0; i < 4; i++) {
+    rect(40, 146 + i * 6, 36 - i * 2, 1, '#7a6a4a');
+  }
+  // Green pin
+  circle(58, 142, 3, '#208030');
+  circle(57, 141, 1, '#60c060');
+
+  // Paper 5 — bottom-right, "wanted" poster style
+  rect(208, 142, 56, 44, '#1a1a1a40');
+  rect(206, 140, 56, 44, '#e0c890');
+  rect(208, 142, 52, 6, '#3a1a0a'); // header bar
+  textCenter('WANTED', 143, '#e0c060', 5);
+  // Sketch frame
+  rect(216, 152, 36, 24, '#9a7a4a');
+  rect(218, 154, 32, 20, '#5a3a1a');
+  // Crude dragon silhouette
+  rect(224, 162, 20, 8, '#aa2020');
+  rect(220, 165, 4, 4, '#aa2020');
+  rect(244, 158, 4, 6, '#aa2020');
+  rect(242, 168, 6, 3, '#aa2020');
+  // Two thumbtacks
+  circle(212, 144, 3, '#aa2020');
+  circle(211, 143, 1, '#ff6060');
+  circle(258, 144, 3, '#aa2020');
+  circle(257, 143, 1, '#ff6060');
+
+  // String/ribbon between two papers (decorative)
+  for (let i = 0; i < 30; i++) {
+    rect(96 + i * 3, 80 + Math.sin(i * 0.5) * 2, 1, 1, '#5a3a1a');
+  }
+
+  // Title at the very top (above the cork board)
+  textCenter('News Board', 1, '#e0c080', 7);
 }
 
 // ===================== EVENT SCENES =====================
@@ -7092,7 +7367,18 @@ function addMsg(text, colorClass = 'narrator') {
 }
 
 // ===================== MENU =====================
+// Auto-assign menu keys: 1-9, then A-Z (lowercase a-z when typed)
+function getMenuKeyForIndex(i) {
+  if (i < 9) return String(i + 1);          // 1-9
+  if (i < 35) return String.fromCharCode(65 + i - 9); // A-Z (indices 9-34)
+  return '';
+}
+
 function setMenu(items) {
+  // Auto-assign keys based on position so menus over 9 items still work
+  for (let i = 0; i < items.length; i++) {
+    items[i].key = getMenuKeyForIndex(i);
+  }
   currentMenu = items;
   menuPanel.innerHTML = '';
   for (const item of items) {
@@ -7100,7 +7386,7 @@ function setMenu(items) {
     btn.className = 'menu-item' + (item.disabled ? ' disabled' : '');
     const keySpan = document.createElement('span');
     keySpan.className = 'menu-key';
-    keySpan.textContent = `[${item.key}]`;
+    keySpan.textContent = item.key ? `[${item.key}]` : '';
     const labelSpan = document.createElement('span');
     labelSpan.className = 'menu-label';
     labelSpan.textContent = item.label;
@@ -8055,12 +8341,29 @@ document.addEventListener('keydown', (e) => {
     }
   }
 
-  // Number keys 1-9 select menu items
+  // Menu key selection: 1-9 then A-Z
+  // Don't intercept keys while typing in the name input
+  if (document.activeElement === nameInput) return;
+
+  // Number keys 1-9
   const num = parseInt(e.key);
   if (num >= 1 && num <= 9) {
     const item = currentMenu.find(m => m.key === String(num));
     if (item && !item.disabled) {
+      e.preventDefault();
       handleMenuAction(item);
+    }
+    return;
+  }
+  // Letter keys A-Z (case-insensitive). Skip on forest screen since WASD/M are reserved.
+  if (state.screen !== 'forest' && e.key.length === 1) {
+    const upper = e.key.toUpperCase();
+    if (upper >= 'A' && upper <= 'Z') {
+      const item = currentMenu.find(m => m.key === upper);
+      if (item && !item.disabled) {
+        e.preventDefault();
+        handleMenuAction(item);
+      }
     }
   }
 });
@@ -8533,6 +8836,42 @@ function handleLandmarkInteraction(landmark, addMsg) {
   return false;
 }
 
+// ===================== RESPONSIVE SCALING =====================
+// Scale the game container to fit the viewport while preserving pixel-perfect rendering.
+// The container's natural size is 640px wide and ~720px tall (canvas + status + text + menu).
+function applyScale() {
+  const wrapper = document.getElementById('scaleWrapper');
+  const container = document.getElementById('gameContainer');
+  if (!wrapper || !container) return;
+
+  // Reset scale before measuring to get the natural size
+  wrapper.style.transform = 'translate(-50%, -50%) scale(1)';
+  const naturalWidth = container.offsetWidth;
+  const naturalHeight = container.offsetHeight;
+  if (naturalWidth === 0 || naturalHeight === 0) return;
+
+  // Leave a small margin around the edges
+  const margin = 20;
+  const availW = window.innerWidth - margin * 2;
+  const availH = window.innerHeight - margin * 2;
+
+  // Use the smaller scale factor to fit both dimensions
+  // Snap to 0.5 increments at low scales for cleaner pixel rendering, then any value
+  let scale = Math.min(availW / naturalWidth, availH / naturalHeight);
+  if (scale >= 1) {
+    // Above 1x, snap to integer or half steps for pixel-perfect look
+    scale = Math.floor(scale * 2) / 2;
+  } else {
+    // Below 1x (small windows), allow finer scaling so it still fits
+    scale = Math.max(0.4, scale);
+  }
+
+  wrapper.style.transform = `translate(-50%, -50%) scale(${scale})`;
+}
+
+window.addEventListener('resize', applyScale);
+window.addEventListener('load', applyScale);
+
 // ===================== AUDIO TOGGLES =====================
 document.getElementById('btnMusic').addEventListener('click', () => {
   initAudio();
@@ -8551,6 +8890,7 @@ document.getElementById('btnSfx').addEventListener('click', () => {
 // ===================== INIT =====================
 function init() {
   goToScreen('title');
+  applyScale();
 }
 
 // Wait for font to load
