@@ -2038,6 +2038,9 @@ function createPlayer(name, playerClass) {
   state.newsBoard = [
     'Welcome to Helsinki, adventurer!',
     'The Red Dragon terrorizes the land...',
+    'Lohikaarme sleeps beneath the hills of Kauniainen.',
+    'Only the Sampo Blade can slay the dragon, they say.',
+    'The Sampo was shattered into four fragments, scattered across the regions.',
     'Brave souls gather at the inn.',
   ];
   state.flags.visited_helsinki = true;
@@ -2059,6 +2062,9 @@ function initAiPlayers() {
 
 function initQuestBoard() {
   state.questBoard = [];
+  // Auto-accept the main story quest from the start
+  state.questBoard.push({ id: 'slay_the_dragon', progress: 0, required: 1 });
+  state.player.activeQuests.push('slay_the_dragon');
 }
 
 function getAvailableSpells() {
@@ -2176,8 +2182,67 @@ function simulateAiPlayers() {
     }
   }
 
+  // Add dragon hint news based on player progress
+  const dragonHint = getDragonHintNews();
+  if (dragonHint) news.push(dragonHint);
+
   // Keep only last 20 news items
   state.newsBoard = [...news, ...state.newsBoard].slice(0, 20);
+}
+
+function getDragonHintNews() {
+  if (!state.player || state.flags.dragon_slain) return null;
+
+  const lvl = state.player.level;
+  const fragments = [
+    hasItem('sampo_fragment_1') > 0,
+    hasItem('sampo_fragment_2') > 0,
+    hasItem('sampo_fragment_3') > 0,
+    hasItem('sampo_fragment_4') > 0,
+  ];
+  const fragCount = fragments.filter(Boolean).length;
+  const hasSampoBlade = state.player.weapon?.id === 'sampo_blade';
+
+  // Tiered hints — only one shows per day, picked by what's most relevant
+  const hints = [];
+
+  // Always-relevant lore
+  if (lvl < 4) {
+    hints.push('Old folk say: "The dragon stirs only when the worthy come for it."');
+    hints.push('A scholar mutters about the four lost fragments of the Sampo.');
+    hints.push('"Helsinki, Espoo, Vantaa, Kauniainen — one piece sleeps in each."');
+  }
+  if (lvl >= 4 && lvl < 7) {
+    hints.push('Travelers say a Sampo fragment can be found in Espoo\'s deep lake.');
+    hints.push('"The dragon waits for one strong enough. None have been so far."');
+  }
+  if (lvl >= 7 && lvl < 10) {
+    hints.push('Whispers from Vantaa: a Sampo fragment glows in the airport ruins.');
+    hints.push('"The Sampo Blade is the only weapon Lohikaarme fears."');
+  }
+  if (lvl >= 10) {
+    hints.push('Kauniainen elders speak of a fragment near the ancient gate.');
+    hints.push('"Forge the Sampo Blade at the gate, then climb to the Dragon\'s Mound."');
+  }
+
+  // Fragment count hints
+  if (fragCount === 1) hints.push(`A bard sings: "One fragment found, three remain. The dragon sleeps on."`);
+  if (fragCount === 2) hints.push('Word spreads: half the Sampo has been gathered.');
+  if (fragCount === 3) hints.push('"Just one fragment more," whisper the rune-readers. "The hour approaches."');
+  if (fragCount === 4 && !hasSampoBlade) {
+    hints.push('All four fragments are gathered! The Sampo Blade can now be forged at the Kauniainen gate.');
+  }
+  if (hasSampoBlade && lvl < 12) {
+    hints.push('The Sampo Blade hums in your pack. It hungers for dragon flesh. But are you strong enough?');
+  }
+  if (hasSampoBlade && lvl >= 12) {
+    hints.push('You hold the Sampo Blade. You stand at level 12. The Dragon\'s Mound in Kauniainen awaits.');
+  }
+
+  if (hints.length === 0) return null;
+  // Only show a hint ~50% of the time so it's not every day
+  if (Math.random() > 0.5) return null;
+  return hints[Math.floor(Math.random() * hints.length)];
 }
 
 function addInventoryItem(itemId, quantity = 1) {
@@ -4092,10 +4157,23 @@ const QUEST_TEMPLATES = [
     title: 'Forge the Sampo Blade',
     region: 'kauniainen',
     type: 'collect',
-    description: 'Gather all four Sampo fragments and forge the dragon-slaying weapon.',
+    description: 'Gather all four Sampo fragments scattered across the four regions, then return to forge the dragon-slaying weapon.',
     collectItems: ['sampo_fragment_1', 'sampo_fragment_2', 'sampo_fragment_3', 'sampo_fragment_4'],
     rewards: { xp: 500, weaponId: 'sampo_blade' },
     minLevel: 10,
+  },
+
+  // ===== MAIN QUEST: SLAY THE DRAGON =====
+  {
+    id: 'slay_the_dragon',
+    title: 'Slay the Red Dragon',
+    region: 'kauniainen',
+    type: 'kill',
+    description: 'Lohikaarme, the Red Dragon, sleeps beneath the Kauniainen hills. Reach level 12, gather all four Sampo fragments to forge the Sampo Blade, then travel to the Dragon\'s Mound to challenge it.',
+    target: 'lohikaarme_spirit',
+    required: 1,
+    rewards: { gold: 5000, xp: 2000 },
+    minLevel: 1,
   },
 ];
 
@@ -6794,23 +6872,34 @@ function getQuestBoardMenu(addMsg) {
 
   const items = [];
 
-  // Show active quests
+  // Show active quests with progress
   if (active.length > 0) {
     addMsg('=== Active Quests ===', 'title');
     for (const q of active) {
       if (q.template) {
-        addMsg(`  ${q.template.title}: ${q.progress}/${q.required}`, 'quest');
+        addMsg(`* ${q.template.title} (${q.progress}/${q.required})`, 'quest');
+        addMsg(`  ${q.template.description}`, 'narrator');
       }
     }
+    addMsg('', 'narrator');
   }
 
-  // Available quests to accept
+  // Available quests with descriptions in text panel
   if (available.length > 0) {
     addMsg('=== Available Quests ===', 'title');
     for (const q of available) {
+      addMsg(`* ${q.title}`, 'quest');
+      addMsg(`  ${q.description}`, 'narrator');
+      let rewardLine = '  Reward: ';
+      const parts = [];
+      if (q.rewards.gold) parts.push(`${q.rewards.gold}g`);
+      if (q.rewards.xp) parts.push(`${q.rewards.xp} XP`);
+      if (q.rewards.itemId) parts.push(getItemById(q.rewards.itemId)?.name || q.rewards.itemId);
+      if (q.rewards.weaponId) parts.push(getItemById(q.rewards.weaponId)?.name || q.rewards.weaponId);
+      if (parts.length) addMsg(rewardLine + parts.join(', '), 'gold');
       items.push({
         key: String(items.length + 1),
-        label: `${q.title} — ${q.description.substring(0, 40)}...`,
+        label: `Accept: ${q.title}`,
         action: 'accept_quest',
         data: q.id,
       });
@@ -7009,7 +7098,15 @@ function setMenu(items) {
   for (const item of items) {
     const btn = document.createElement('button');
     btn.className = 'menu-item' + (item.disabled ? ' disabled' : '');
-    btn.innerHTML = `<span class="menu-key">[${item.key}]</span> ${item.label}`;
+    const keySpan = document.createElement('span');
+    keySpan.className = 'menu-key';
+    keySpan.textContent = `[${item.key}]`;
+    const labelSpan = document.createElement('span');
+    labelSpan.className = 'menu-label';
+    labelSpan.textContent = item.label;
+    labelSpan.title = item.label; // tooltip shows full text on hover
+    btn.appendChild(keySpan);
+    btn.appendChild(labelSpan);
     if (!item.disabled) {
       btn.addEventListener('click', () => handleMenuAction(item));
     }

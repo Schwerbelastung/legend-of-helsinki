@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.10.2] - 2026-04-07
+
+### Added
+- **Main story quest** — "Slay the Red Dragon" is now auto-accepted at character creation, making the goal explicit from the start
+- **Dragon hint news** — the inn news board now shows progressive hints about the dragon, Sampo fragments, and forging the Sampo Blade
+  - Lore hints scale with player level (early hints about the four fragments, later hints about specific regions and the Dragon's Mound)
+  - Fragment-collection progress hints (1/4, 2/4, etc.)
+  - Endgame hints when you've forged the Sampo Blade
+- **Expanded starting news** — initial inn news now mentions Lohikaarme by name, the Sampo Blade requirement, and the four fragments
+
+### Fixed
+- **Quest text overflow** — long quest titles and descriptions no longer overflow menu buttons
+  - Menu items now use CSS ellipsis truncation as a safety net
+  - Quest descriptions and rewards now display fully in the text panel where they wrap naturally
+  - Active quests show progress and full description in the text panel
+
 ## [0.10.1] - 2026-04-07
 
 ### Changed
